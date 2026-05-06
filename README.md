@@ -1,45 +1,70 @@
 # AI Engineering Learning Notes
 
-Personal learning repository for Backend → AI Platform / LLM Infrastructure growth.
+Персональний навчальний репозиторій для переходу з **Backend / Java Engineering** у напрям **AI Platform Engineering / LLM Infrastructure / AI Systems Engineering**.
 
-This repository stores daily review notes, flashcards, weekly reviews, and production-oriented learning material.
+Цей репозиторій зберігає навчальні нотатки, flashcards, weekly reviews, шаблони й матеріали для щоденного повторення. Формат — звичайні Markdown-файли, які зручно відкривати в **Obsidian**, версіонувати через Git і пізніше автоматизувати Python-скриптами.
 
-## Goals
+## Основні цілі
 
-- Build a durable AI Engineering knowledge base.
-- Store notes as Markdown files, compatible with Obsidian.
-- Keep learning material versioned in Git.
-- Generate Anki flashcards from key concepts.
-- Track weak spots and weekly consolidation.
+- Побудувати довгострокову інженерну базу знань з AI Engineering.
+- Зберігати матеріали у Markdown, сумісному з Obsidian.
+- Версіонувати навчання через Git.
+- Генерувати flashcards для Anki або іншої spaced-repetition системи.
+- Відстежувати слабкі місця, повторення й weekly consolidation.
+- Поступово перетворити навчальний процес у portfolio-friendly AI automation project.
 
-## Structure
+## Структура репозиторію
 
 ```text
-00_Index/                  Main dashboards and learning maps
-01_LangChain/              LangChain notes
-02_Python/                 Python fundamentals and async/backend topics
+00_Index/                  Головні індекси, roadmap і dashboard повторення
+01_LangChain/              Нотатки по LangChain, LCEL, chains, tools, agents
+02_Python/                 Python fundamentals, async, backend/AI tooling
 03_RAG/                    Retrieval-Augmented Generation
-04_Agents/                 AI agents, tools, LangGraph
-05_LLM_Gateway/            LLM gateway architecture and examples
-06_Spring_AI/              Spring AI notes
-07_AI_Platform/            AI platform engineering topics
-08_Production_LLM/         Observability, evals, cost, security
-09_Interview_Preparation/  Interview Q&A and system design
-Weekly_Reviews/            Weekly summaries and gap analysis
-Flashcards/                Anki CSV exports
-templates/                 Reusable note templates
-scripts/                   Automation scripts
+04_Agents/                 AI agents, tools, LangGraph, orchestration
+05_LLM_Gateway/            Архітектура LLM Gateway
+06_Spring_AI/              Spring AI для Java/Spring екосистеми
+07_AI_Platform/            AI Platform Engineering topics
+08_Production_LLM/         Observability, evaluation, cost, security, reliability
+09_Interview_Preparation/  Interview Q&A, system design, role preparation
+Weekly_Reviews/            Weekly summaries і knowledge gap analysis
+Flashcards/                CSV-файли для Anki / repetition tools
+templates/                 Повторно використовувані шаблони нотаток
+scripts/                   Допоміжні скрипти для автоматизації
 ```
 
-## Daily workflow
+## Щоденний workflow
 
-1. Create one note per topic using `templates/daily-review-note-template.md`.
-2. Put it into the correct folder, for example `01_LangChain/`.
-3. Add review dates in the metadata block.
-4. Add flashcards into `Flashcards/` when useful.
-5. Once per week, create a weekly review in `Weekly_Reviews/`.
+1. Після уроку або практики створи одну atomic note для конкретної теми.
+2. Використовуй шаблон `templates/daily-review-note-template.md`.
+3. Поклади файл у правильну папку, наприклад `01_LangChain/`.
+4. Додай metadata: topic, tags, status, review dates.
+5. Додай flashcards у `Flashcards/`, якщо тема містить важливі терміни.
+6. Раз на тиждень створи weekly review у `Weekly_Reviews/`.
 
-## Recommended Obsidian setup
+## Рекомендований Obsidian setup
 
-Open this repository folder as an Obsidian Vault.
+Відкрий кореневу папку цього репозиторію як Obsidian Vault:
 
+```text
+Obsidian → Open folder as vault → ai-engineering-learning-notes
+```
+
+## Правило якості нотаток
+
+Кожна навчальна нотатка має відповідати на питання:
+
+- що це таке;
+- навіщо існує;
+- як працює;
+- як це повʼязано з backend / distributed systems / AI platform;
+- які production-ризики;
+- які типові помилки;
+- як пояснити це на interview;
+- яку маленьку практичну задачу можна зробити.
+
+## Принцип
+
+```text
+Не накопичувати хаотичні конспекти.
+Будувати інженерну систему повторення знань.
+```
