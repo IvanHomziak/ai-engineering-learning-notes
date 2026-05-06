@@ -1,0 +1,8 @@
+Question,Answer,Tags
+"What is LangChain?","A framework for building LLM-powered applications using prompts, models, chains, tools, agents, document loaders, and tracing.","langchain ai-engineering"
+"What is PromptTemplate?","A reusable prompt template with placeholders and runtime variables.","langchain prompt-template"
+"What does prompt_template | llm do?","It creates a chain where the prompt template formats input and passes the final prompt to the LLM.","langchain lcel chain"
+"What does chain.invoke() do?","It executes a Runnable chain with input values and returns the model response.","langchain runnable"
+"Where is the generated text in AIMessage?","In response.content.","langchain aimessage"
+"Why use temperature=0?","For more deterministic and repeatable responses, useful for summarization, code, and factual tasks.","llm temperature"
+"What is LangSmith used for?","Tracing, debugging, monitoring, and inspecting LLM application executions.","langsmith observability"
