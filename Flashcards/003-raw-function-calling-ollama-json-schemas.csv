@@ -1,0 +1,13 @@
+Question,Answer,Topic,Tags
+"What is Layer 2 about?","Implementing the same agent loop without LangChain objects, using raw Ollama SDK and manual JSON tool schemas.","Layer 2 Raw Function Calling with Ollama JSON Schemas","agents;ollama;raw-function-calling"
+"What replaces LangChain @tool?","Plain Python functions plus manual JSON schemas in tools_for_llm.","Layer 2 Raw Function Calling with Ollama JSON Schemas","tools;json-schema"
+"What does LangChain @tool hide according to source?","JSON schema generation from function name, docstring, type hints and arguments.","Layer 2 Raw Function Calling with Ollama JSON Schemas","langchain;tool-abstraction"
+"What replaces llm_with_tools.invoke(...)?","ollama.chat(...) wrapped in ollama_chat_traced.","Layer 2 Raw Function Calling with Ollama JSON Schemas","ollama;sdk"
+"What replaces SystemMessage and HumanMessage?","Raw dictionaries with role and content.","Layer 2 Raw Function Calling with Ollama JSON Schemas","messages;provider-specific"
+"What replaces ToolMessage?","Raw dictionary with role: tool and content equal to the observation.","Layer 2 Raw Function Calling with Ollama JSON Schemas","tool-message;observation"
+"How is selected tool name read in Ollama response?","Through tool_call.function.name.","Layer 2 Raw Function Calling with Ollama JSON Schemas","tool-calling;ollama"
+"How are tool arguments read in Ollama response?","Through tool_call.function.arguments.","Layer 2 Raw Function Calling with Ollama JSON Schemas","tool-calling;arguments"
+"How is the tool executed in raw version?","By calling the Python function directly: tool_to_use(**tool_args).","Layer 2 Raw Function Calling with Ollama JSON Schemas","tool-dispatch;python"
+"Why is vendor switching harder without LangChain?","Tool schemas, message formats, SDK calls and response shapes can differ by provider.","Layer 2 Raw Function Calling with Ollama JSON Schemas","provider-portability;integration-cost"
+"Why is manual JSON schema risky?","It can drift from real function signatures and create runtime bugs.","Layer 2 Raw Function Calling with Ollama JSON Schemas","schema-drift;production"
+"What is the main lesson of Layer 2?","Function calling is structured API behavior, not magic; LangChain mainly reduces integration boilerplate.","Layer 2 Raw Function Calling with Ollama JSON Schemas","function-calling;langchain-abstractions"
