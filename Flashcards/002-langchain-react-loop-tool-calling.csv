@@ -1,0 +1,13 @@
+Question,Answer,Topic,Tags
+"What does Layer 1 implement?","A manual ReAct-style agent loop using LangChain primitives for model, tools, messages, and tracing.","Layer 1 ReAct Loop with LangChain Tool Calling","agents;langchain;react-loop"
+"What does @tool do in this source?","It turns a Python function into a LangChain tool using function name, docstring and type hints as tool metadata.","Layer 1 ReAct Loop with LangChain Tool Calling","langchain;tools"
+"What does bind_tools(tools) do?","It attaches tool definitions to the chat model so the model can return structured tool calls.","Layer 1 ReAct Loop with LangChain Tool Calling","bind-tools;tool-calling"
+"Does the LLM execute the tool?","No. The LLM returns a tool call; application code executes the tool.","Layer 1 ReAct Loop with LangChain Tool Calling","tools;agent-execution"
+"What is ToolMessage used for?","It sends the actual tool result back into the message history.","Layer 1 ReAct Loop with LangChain Tool Calling","toolmessage;observation"
+"What is observation?","The result returned by executing the selected tool.","Layer 1 ReAct Loop with LangChain Tool Calling","observation;agent-loop"
+"Why does the code use MAX_ITERATIONS?","To prevent unbounded agent loops.","Layer 1 ReAct Loop with LangChain Tool Calling","reliability;failure-modes"
+"Why does the prompt forbid guessing prices?","To force the model to call get_product_price instead of hallucinating a price.","Layer 1 ReAct Loop with LangChain Tool Calling","defensive-prompting;hallucination"
+"Why does the prompt forbid manual discount calculation?","To force tool usage and reduce arithmetic or hallucination risk.","Layer 1 ReAct Loop with LangChain Tool Calling","defensive-prompting;tools"
+"Why is processing only tool_calls[0] a simplification?","Modern models may return multiple tool calls, but the example forces one tool per iteration.","Layer 1 ReAct Loop with LangChain Tool Calling","tool-calling;limitations"
+"Why is easy model switching not enough?","A new model may behave worse for the same agent task; it must be benchmarked and evaluated.","Layer 1 ReAct Loop with LangChain Tool Calling","model-switching;evaluation"
+"What is the production issue with returning 0 for unknown product?","It can silently convert an invalid input into a valid-looking answer.","Layer 1 ReAct Loop with LangChain Tool Calling","production;data-quality"
