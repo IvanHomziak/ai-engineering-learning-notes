@@ -1,0 +1,13 @@
+Question,Answer,Topic,Tags
+"What is Layer 3 about?","Implementing an agent without function calling by using ReAct prompt, regex parsing and scratchpad.","Layer 3 Raw ReAct Prompt Manual Tool Calling","agents;react-prompt;manual-tool-calling"
+"What replaces structured tool_calls?","Raw text output containing Action and Action Input.","Layer 3 Raw ReAct Prompt Manual Tool Calling","tool-calling;raw-text"
+"Why is re imported?","To parse Final Answer, Action, and Action Input from raw LLM text.","Layer 3 Raw ReAct Prompt Manual Tool Calling","regex;parsing"
+"Why is inspect imported?","To extract function signatures and docstrings for dynamic tool descriptions.","Layer 3 Raw ReAct Prompt Manual Tool Calling","inspect;tool-descriptions"
+"What is tool_descriptions?","A string containing tool names, signatures and docstrings injected into the ReAct prompt.","Layer 3 Raw ReAct Prompt Manual Tool Calling","tool-descriptions;prompt-engineering"
+"What is tool_names?","Comma-separated list of allowed action names injected into the prompt.","Layer 3 Raw ReAct Prompt Manual Tool Calling","tools;allowlist"
+"What is scratchpad?","Growing text history of model output, real observations and next Thought marker.","Layer 3 Raw ReAct Prompt Manual Tool Calling","scratchpad;agent-memory"
+"Why use stop token newline Observation?","To prevent the model from hallucinating the observation before the application inserts the real tool result.","Layer 3 Raw ReAct Prompt Manual Tool Calling","stop-token;hallucination-control"
+"What happens if Final Answer is found?","The loop returns the parsed final answer.","Layer 3 Raw ReAct Prompt Manual Tool Calling","final-answer;agent-loop"
+"What happens if Action is found?","The application parses the tool name/input and executes the matching tool.","Layer 3 Raw ReAct Prompt Manual Tool Calling","action;tool-dispatch"
+"Why is raw ReAct fragile?","It depends on the model following exact text format and on regex parsing working correctly.","Layer 3 Raw ReAct Prompt Manual Tool Calling","failure-modes;regex"
+"What is the main lesson of Layer 3?","Function calling is a structured version of behavior that can be approximated with prompt protocol, parser and tool executor.","Layer 3 Raw ReAct Prompt Manual Tool Calling","function-calling;react"
