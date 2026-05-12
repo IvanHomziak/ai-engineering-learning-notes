@@ -1,0 +1,11 @@
+Question,Answer,Tags
+"What is a prompt in this source?","Input given to an AI model to guide it toward producing an output.","prompt-engineering;basics"
+"What are the four prompt components?","Instruction, context, input data, and output indicator.","prompt-engineering;prompt-components"
+"What is zero-shot prompting?","Asking the model to perform a task without providing examples.","zero-shot;prompting"
+"What is few-shot prompting?","Providing a small number of examples so the model can imitate the expected pattern.","few-shot;prompting"
+"What is one-shot prompting?","A subset of few-shot prompting with exactly one example.","one-shot;few-shot"
+"What is chain-of-thought prompting?","Prompting that guides the model to solve complex tasks through intermediate reasoning steps.","chain-of-thought;reasoning"
+"What does ReAct combine?","Reasoning and acting: the model reasons, chooses actions, observes results, and continues.","react;agents"
+"What is context engineering?","Dynamically assembling the correct and relevant context for an LLM call.","context-engineering;llm-systems"
+"What is context poisoning?","When hallucinated or bad context enters future context and degrades the system.","context-engineering;failure-modes"
+"What is the system prompt Goldilocks idea?","A good system prompt should be neither too vague nor too specific; it should give just enough guidance.","system-prompts;prompt-engineering"
