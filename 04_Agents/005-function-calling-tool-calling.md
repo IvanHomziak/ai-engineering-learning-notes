@@ -1,6 +1,6 @@
 ---
 type: daily-review-note
-topic: Function Calling / Tool Calling for LLM Agents
+topic: Function Calling / Tool Calling для LLM-агентів
 area: Agents
 date: 2026-05-13
 tags:
@@ -22,15 +22,15 @@ source_type: transcript
 source_confidence: medium
 ---
 
-# Daily Review Note: Function Calling / Tool Calling for LLM Agents
+# Щоденна нотатка для повторення: Function Calling / Tool Calling для LLM-агентів
 
-## 1. Core idea
+## 1. Основна ідея
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-Function calling, also called tool calling in the source, is the LLM capability to return a **structured function call** instead of only plain text.
+Function calling, або tool calling у матеріалі, — це здатність LLM повертати **структурований виклик функції**, а не тільки звичайний текст.
 
-Instead of relying on a ReAct prompt where the model writes text like:
+Замість ReAct prompt, де модель пише текст у такому стилі:
 
 ```text
 Thought: ...
@@ -39,84 +39,84 @@ Action Input: Paris
 Observation: ...
 ```
 
-function calling lets the model return a structured object with:
+function calling дозволяє моделі повернути структурований обʼєкт із:
 
 ```text
-function name
-function arguments
+назвою функції
+аргументами функції
 ```
 
-The application then parses this structured response and executes the matching function/tool in application code.
+Після цього application code парсить структуровану відповідь і виконує відповідну function/tool у коді застосунку.
 
-The source presents function calling as the production-oriented evolution of the ReAct prompt because JSON-like structured output is easier to parse than free-form text parsed with regular expressions.
+У джерелі function calling подано як production-орієнтовану еволюцію ReAct prompt, бо JSON-подібний structured output легше парсити, ніж free-form text через regular expressions.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
-Function calling is best understood as a model-assisted command selection mechanism:
+Function calling найкраще розуміти як механізм вибору команди за допомогою моделі:
 
 ```text
-User request -> LLM chooses tool + args -> application validates -> application executes tool -> tool result goes back to LLM/application
+User request -> LLM вибирає tool + args -> application валідовує -> application виконує tool -> tool result повертається в LLM/application
 ```
 
-The LLM does **not** execute the function. It only proposes a function call. The backend executes it.
+LLM **не виконує** функцію. Вона лише пропонує function call. Backend виконує реальну дію.
 
-### Assumptions
+### Припущення
 
-- This note is based only on the provided transcript from Section 8: Function Calling.
-- No external documentation was verified for this note.
-- Vendor/model claims are treated as version-sensitive.
+- Нотатка базується тільки на наданому transcript з Section 8: Function Calling.
+- Зовнішня документація не перевірялась для цієї нотатки.
+- Claims про vendors/models трактуються як version-sensitive.
 
-### Unknowns
+### Невідоме / не підтверджено джерелом
 
-- Unknown / Not confirmed from source: exact response format for every provider.
-- Unknown / Not confirmed from source: exact schema syntax for OpenAI, Anthropic, Google, or other vendors.
-- Unknown / Not confirmed from source: whether every current model from a vendor supports function calling.
+- Unknown / Not confirmed from source: точний response format для кожного provider.
+- Unknown / Not confirmed from source: точний schema syntax для OpenAI, Anthropic, Google або інших vendors.
+- Unknown / Not confirmed from source: чи кожна актуальна модель конкретного vendor підтримує function calling.
 
 ---
 
-## 2. Why it matters
+## 2. Чому це важливо
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-Raw ReAct prompting is powerful but fragile. The source says it is enough for the LLM to generate one wrong token and the parser can fail, especially when the application relies on regex parsing.
+Raw ReAct prompting потужний, але fragile. Джерело каже, що достатньо, щоб LLM згенерувала один неправильний token, і parser може зламатися, особливо якщо application покладається на regex parsing.
 
-Function calling improves this by making the model output a structured function call in a dedicated part of the response. This makes it easier for the application or framework to access fields directly instead of parsing natural language.
+Function calling покращує це тим, що змушує модель повертати structured function call у спеціальній частині response. Це полегшує application або framework доступ до полів напряму, без parsing natural language.
 
-The source names two main capabilities:
+Джерело називає дві головні можливості:
 
-1. Connecting the LLM to external tools.
-2. Getting structured output from the LLM.
+1. Підключення LLM до external tools.
+2. Отримання structured output від LLM.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
-For AI agents, function calling matters because it turns ambiguous text output into a more machine-readable contract.
+Для AI agents function calling важливий, бо перетворює ambiguous text output на більш machine-readable contract.
 
 Production impact:
 
-- fewer parsing failures than raw ReAct text;
-- cleaner integration with application services;
-- easier validation of function name and arguments;
-- better compatibility with typed downstream objects;
-- better foundation for tool-using agents.
+- менше parsing failures, ніж у raw ReAct text;
+- чистіша інтеграція з application services;
+- простіша validation function name і arguments;
+- краща сумісність із typed downstream objects;
+- кращий фундамент для tool-using agents.
 
 ---
 
-## 3. How it works
+## 3. Як це працює
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-The process described in the source:
+Процес, описаний у джерелі:
 
-1. Developer provides the model with function definitions.
-2. Function definitions include names, parameters and descriptions.
-3. Model receives a user request.
-4. Model decides whether a function should be invoked.
-5. If needed, model outputs a structured object specifying function name and arguments.
-6. Application parses the object.
-7. Application executes the real function.
-8. Application can feed the function result back to the LLM and continue the flow.
+1. Developer надає model function definitions.
+2. Function definitions містять names, parameters і descriptions.
+3. Model отримує user request.
+4. Model вирішує, чи потрібно викликати function.
+5. Якщо потрібно, model повертає structured object із function name і arguments.
+6. Application парсить object.
+7. Application виконує реальну function.
+8. Application може повернути function result назад у LLM і продовжити flow.
 
-Example from the source:
+Приклад із джерела:
 
 ```text
 User: What's the weather in Paris?
@@ -125,35 +125,33 @@ Model output: function call with location=Paris and unit=Fahrenheit or Celsius
 Application: executes get_current_weather(...) and sends result back
 ```
 
-The source says this is more reliable than ReAct prompt parsing because the response is structured rather than free-form text.
+Джерело каже, що це надійніше за ReAct prompt parsing, бо response структурований, а не free-form text.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
-A production implementation should normally add:
+Production implementation зазвичай має додати:
 
-- allowlist of callable tools;
+- allowlist callable tools;
 - argument validation;
 - schema validation;
 - authorization checks;
-- timeouts and retries;
-- idempotency for side-effecting tools;
+- timeouts і retries;
+- idempotency для side-effecting tools;
 - audit logs;
-- tracing of model decision and tool execution;
-- fallback behavior if the model returns invalid tool args.
+- tracing model decision і tool execution;
+- fallback behavior, якщо model повертає invalid tool args.
 
-Function calling gives a cleaner protocol, but it does not remove backend responsibility.
+Function calling дає чистіший protocol, але не знімає відповідальність із backend.
 
 ---
 
-## 4. Backend analogy
+## 4. Backend аналогія
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-Function calling is described as the model returning a structured function name and arguments that application code can execute.
+Function calling описаний як ситуація, де model повертає structured function name і arguments, які application code може виконати.
 
-### Additional backend / production context
-
-Backend analogy:
+### Додатковий backend / production context
 
 | Function calling concept | Backend analogy |
 |---|---|
@@ -169,52 +167,52 @@ Backend analogy:
 Mental model:
 
 ```text
-Function calling = LLM produces a typed command request; backend validates and executes it.
+Function calling = LLM створює typed command request; backend валідовує і виконує його.
 ```
 
 ---
 
 ## 5. Production relevance
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-The source claims function calling is more production-grade than raw ReAct prompting because:
+Джерело стверджує, що function calling більш production-grade, ніж raw ReAct prompting, тому що:
 
-- the output is structured;
-- it avoids regex parsing;
-- it is easier to parse;
-- it reduces random formatting errors;
-- it enables reliable tool usage;
-- it can reduce token usage because the model does not need to output verbose reasoning steps.
+- output структурований;
+- він уникає regex parsing;
+- його легше парсити;
+- він зменшує random formatting errors;
+- він дає надійніше tool usage;
+- він може зменшити token usage, бо model не мусить виводити verbose reasoning steps.
 
-The source also names one drawback: **opaque reasoning process**. The model may return only the final function name and arguments, without exposing why it chose them.
+Джерело також називає один drawback: **opaque reasoning process**. Model може повернути тільки final function name і arguments, не пояснюючи, чому вона їх вибрала.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 #### Reliability
 
-Function calling reduces format errors, but it does not guarantee correctness. The model can still:
+Function calling зменшує format errors, але не гарантує correctness. Model все ще може:
 
-- choose the wrong function;
-- pass wrong arguments;
-- omit required fields;
+- вибрати wrong function;
+- передати wrong arguments;
+- пропустити required fields;
 - hallucinate values;
-- call tools in the wrong order;
-- fail to call a needed tool.
+- викликати tools у wrong order;
+- не викликати потрібний tool.
 
 #### Security
 
-Tool execution is a trust boundary:
+Tool execution — це trust boundary:
 
-- never execute arbitrary function names from model output;
-- validate all arguments;
-- restrict tools by user permissions;
-- avoid exposing sensitive internal functions;
-- add human approval for high-risk actions.
+- ніколи не виконуй arbitrary function names із model output;
+- валідовуй усі arguments;
+- обмежуй tools за user permissions;
+- не expose sensitive internal functions;
+- додавай human approval для high-risk actions.
 
 #### Observability
 
-Trace separately:
+Окремо trace:
 
 - model input;
 - available tool definitions;
@@ -227,17 +225,17 @@ Trace separately:
 
 #### Cost/performance
 
-The source claims function calling can be easier on tokens than ReAct because it does not require verbose reasoning text. Still, production cost depends on:
+Джерело стверджує, що function calling може бути легшим за tokens, ніж ReAct, бо не потребує verbose reasoning text. Але production cost залежить від:
 
-- number of loop iterations;
-- size of tool schemas;
-- size of context;
+- кількості loop iterations;
+- розміру tool schemas;
+- розміру context;
 - provider/model;
 - tool latency.
 
 ### Version-sensitive / may require verification
 
-The material contains claims that are version/provider-sensitive:
+Матеріал містить claims, які залежать від version/provider:
 
 - function calling was introduced by OpenAI in 2023;
 - big vendors' state-of-the-art models generally support function calling;
@@ -245,130 +243,130 @@ The material contains claims that are version/provider-sensitive:
 - function calling is the de facto standard;
 - function calling is more deterministic/reliable than ReAct prompting.
 
-These may be directionally useful, but should be verified against current provider docs and target model behavior before production use.
+Ці твердження можуть бути directionally useful, але їх треба перевіряти по current provider docs і target model behavior перед production use.
 
 ---
 
 ## 6. Key terms
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 | Term | Meaning |
 |---|---|
-| Function calling | Model capability to output a structured function call with name and arguments |
-| Tool calling | Alternate term used interchangeably with function calling in the source |
-| Function definition | Metadata given to the model: function name, parameters, descriptions |
-| Structured output | Machine-readable output such as JSON-like fields rather than plain text |
-| ReAct prompt | Prompt pattern using Thought/Action/Observation text loop |
-| Regex parsing | Parsing free-form text with regular expressions; source presents it as fragile |
-| External tool | Function/API outside the LLM that application code can execute |
-| Opaque reasoning | The model returns the function call without exposing the intermediate rationale |
-| Schema | Description of expected function arguments and structure |
+| Function calling | Здатність model повертати structured function call з name і arguments |
+| Tool calling | Альтернативний термін, який у джерелі використовується взаємозамінно з function calling |
+| Function definition | Metadata, яку дають model: function name, parameters, descriptions |
+| Structured output | Machine-readable output, наприклад JSON-like fields, а не plain text |
+| ReAct prompt | Prompt pattern із Thought/Action/Observation text loop |
+| Regex parsing | Parsing free-form text через regular expressions; у джерелі подано як fragile |
+| External tool | Function/API поза LLM, який application code може виконати |
+| Opaque reasoning | Model повертає function call без intermediate rationale |
+| Schema | Опис очікуваних function arguments і structure |
 
 ---
 
-## 7. Common mistakes
+## 7. Типові помилки
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-1. Assuming ReAct prompt parsing is production reliable.
-   - Source says one wrong token can break regex parsing.
+1. Думати, що ReAct prompt parsing є production reliable.
+   - Джерело каже, що один wrong token може зламати regex parsing.
 
-2. Thinking function calling means the LLM runs the function.
-   - Source says the application executes the real function after parsing the model output.
+2. Думати, що function calling означає, що LLM виконує function.
+   - Джерело каже, що application виконує реальну function після parsing model output.
 
-3. Treating function calling as only agent tooling.
-   - Source also says it can be used for structured output extraction.
+3. Сприймати function calling тільки як agent tooling.
+   - Джерело також каже, що його можна використовувати для structured output extraction.
 
-4. Expecting to see full reasoning.
-   - Source says reasoning is often opaque; developer sees function name and arguments.
+4. Очікувати full reasoning.
+   - Джерело каже, що reasoning часто opaque; developer бачить function name і arguments.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
-5. Not validating function arguments.
-   - Structured does not mean safe or correct.
+5. Не валідовувати function arguments.
+   - Structured не означає safe або correct.
 
-6. Exposing too many tools.
-   - More tools can increase wrong-tool selection risk and security exposure.
+6. Expose too many tools.
+   - Більше tools може збільшити wrong-tool selection risk і security exposure.
 
-7. No tool authorization.
-   - Different users should not have access to the same actions by default.
+7. Не мати tool authorization.
+   - Різні users не повинні мати однаковий доступ до actions за замовчуванням.
 
-8. No fallback for invalid tool calls.
-   - Production systems need retry, clarification, safe failure or human handoff.
+8. Не мати fallback для invalid tool calls.
+   - Production systems потребують retry, clarification, safe failure або human handoff.
 
-9. No evaluation for tool-call accuracy.
-   - You need tests for function selection and argument correctness.
+9. Не мати evaluation для tool-call accuracy.
+   - Потрібні tests для function selection і argument correctness.
 
 ---
 
 ## 8. Flashcards
 
-Q: What is function calling?
-A: An LLM capability to return a structured function call with function name and arguments instead of only plain text.
+Q: Що таке function calling?
+A: Здатність LLM повертати structured function call із function name і arguments замість тільки plain text.
 
-Q: What is tool calling?
-A: Another term for function calling used interchangeably in the source.
+Q: Що таке tool calling?
+A: Інший термін для function calling, який у джерелі використовується взаємозамінно.
 
-Q: Why is function calling more reliable than raw ReAct prompting?
-A: It returns structured data that is easier to parse than free-form text parsed with regex.
+Q: Чому function calling надійніший за raw ReAct prompting?
+A: Він повертає structured data, які легше парсити, ніж free-form text через regex.
 
-Q: Does the LLM execute the function?
-A: No. The LLM outputs the function call; application code executes the actual function.
+Q: Чи виконує LLM функцію?
+A: Ні. LLM повертає function call; application code виконує реальну function.
 
-Q: What does the developer provide to the model?
-A: Function definitions containing names, parameters and descriptions.
+Q: Що developer надає model?
+A: Function definitions із names, parameters і descriptions.
 
-Q: What are the two main capabilities of function calling from the source?
-A: Connecting LLMs to external tools and getting structured output.
+Q: Які дві головні можливості function calling названі в джерелі?
+A: Підключення LLM до external tools і отримання structured output.
 
-Q: What is the main drawback mentioned in the source?
-A: Opaque reasoning: the model may not expose why it chose a function and arguments.
+Q: Який головний drawback згадано в джерелі?
+A: Opaque reasoning: model може не пояснювати, чому вибрала конкретну function і arguments.
 
-Q: Why is regex parsing fragile?
-A: A small formatting/token mistake can break parsing and agent execution.
+Q: Чому regex parsing fragile?
+A: Маленька formatting/token помилка може зламати parsing і agent execution.
 
-Q: What must production code do before executing a tool call?
-A: Validate function name, arguments, permissions and safety constraints.
+Q: Що production code має зробити перед tool execution?
+A: Validate function name, arguments, permissions і safety constraints.
 
-Q: What is the backend mental model?
-A: Function calling is a typed command request generated by the LLM and executed by the backend.
+Q: Яка backend mental model?
+A: Function calling — це typed command request, згенерований LLM і виконаний backend.
 
 ---
 
 ## 9. Interview Q&A
 
-### Q1: What is function calling in LLMs?
+### Q1: Що таке function calling в LLM?
 
-**Answer:** Function calling is the model capability to return a structured function call with a function name and arguments, so application code can execute the corresponding external tool.
+**Answer:** Function calling — це здатність model повертати structured function call із function name і arguments, щоб application code міг виконати відповідний external tool.
 
-### Q2: How is function calling different from ReAct prompting?
+### Q2: Чим function calling відрізняється від ReAct prompting?
 
-**Answer:** ReAct prompting emits plain text like `Action` and `Action Input`, often parsed with regex. Function calling emits structured fields that are easier and safer to parse.
+**Answer:** ReAct prompting генерує plain text типу `Action` і `Action Input`, який часто парситься regex. Function calling генерує structured fields, які легше і безпечніше парсити.
 
-### Q3: Does function calling execute backend code automatically?
+### Q3: Чи function calling автоматично виконує backend code?
 
-**Answer:** No. The model only selects the function and arguments. The application validates and executes the actual code.
+**Answer:** Ні. Model тільки вибирає function і arguments. Application валідовує і виконує actual code.
 
-### Q4: What information must be provided to the model?
+### Q4: Яку інформацію треба надати model?
 
-**Answer:** Function definitions: names, parameters, argument descriptions and tool descriptions.
+**Answer:** Function definitions: names, parameters, argument descriptions і tool descriptions.
 
-### Q5: What are the main advantages?
+### Q5: Які головні переваги?
 
-**Answer:** Structured parsing, fewer formatting errors, more reliable tool usage, easier integration and potential token savings compared to verbose ReAct traces.
+**Answer:** Structured parsing, менше formatting errors, надійніше tool usage, простіша integration і potential token savings порівняно з verbose ReAct traces.
 
-### Q6: What is the main trade-off?
+### Q6: Який головний trade-off?
 
-**Answer:** Opaque reasoning. The model may not show why it selected a particular function or arguments, making debugging/auditing harder.
+**Answer:** Opaque reasoning. Model може не показувати, чому вибрала конкретну function або arguments, що ускладнює debugging/auditing.
 
-### Q7: What failure modes remain?
+### Q7: Які failure modes залишаються?
 
-**Answer:** Wrong tool selection, invalid arguments, hallucinated values, missing fields, unauthorized actions, tool timeout and bad tool result handling.
+**Answer:** Wrong tool selection, invalid arguments, hallucinated values, missing fields, unauthorized actions, tool timeout і bad tool result handling.
 
-### Q8: How should production systems handle function calls?
+### Q8: Як production systems мають обробляти function calls?
 
-**Answer:** Use tool allowlists, schema validation, authorization, retries/timeouts, tracing, audit logs and evaluation datasets for tool-call accuracy.
+**Answer:** Через tool allowlists, schema validation, authorization, retries/timeouts, tracing, audit logs і evaluation datasets для tool-call accuracy.
 
 ---
 
@@ -376,33 +374,33 @@ A: Function calling is a typed command request generated by the LLM and executed
 
 Answer without looking:
 
-1. What problem does function calling solve compared to raw ReAct prompt parsing?
-2. What does the LLM output in function calling?
-3. Who executes the actual function?
-4. What are the two main capabilities mentioned in the source?
-5. Why can function calling use fewer tokens than ReAct?
-6. What does opaque reasoning mean?
-7. What must be validated before tool execution?
-8. What claims are version-sensitive?
+1. Яку проблему function calling вирішує порівняно з raw ReAct prompt parsing?
+2. Що LLM повертає у function calling?
+3. Хто виконує actual function?
+4. Які дві головні capabilities названі в джерелі?
+5. Чому function calling може використовувати менше tokens, ніж ReAct?
+6. Що означає opaque reasoning?
+7. Що треба validate перед tool execution?
+8. Які claims є version-sensitive?
 
 Expected answers:
 
-1. It avoids fragile free-text/regex parsing by returning structured function call data.
-2. Function name and arguments in a structured response area.
-3. The application/backend code.
-4. External tool integration and structured output.
-5. It does not need to emit verbose reasoning/Thought traces.
-6. The model gives function name/args but not the intermediate rationale.
-7. Tool name, arguments, permissions, safety constraints and schema conformity.
-8. Claims about vendor support, reliability, de facto standards, and exact history of function calling.
+1. Він уникає fragile free-text/regex parsing завдяки structured function call data.
+2. Function name і arguments у structured response area.
+3. Application/backend code.
+4. External tool integration і structured output.
+5. Він не мусить emit verbose reasoning/Thought traces.
+6. Model дає function name/args, але не intermediate rationale.
+7. Tool name, arguments, permissions, safety constraints і schema conformity.
+8. Claims про vendor support, reliability, de facto standards і exact history of function calling.
 
 ---
 
-## 11. Mini practice task
+## 11. Міні-практика
 
-### Source-based practice
+### Практика на основі джерела
 
-Write a short comparison table:
+Напиши коротку comparison table:
 
 | Aspect | ReAct prompt | Function calling |
 |---|---|---|
@@ -412,9 +410,9 @@ Write a short comparison table:
 | Reasoning visibility | More visible | More opaque |
 | Tool execution | Application executes | Application executes |
 
-### Additional backend / production context task
+### Додатковий backend / production context task
 
-Design a validation flow before executing a model-selected tool:
+Спроєктуй validation flow перед виконанням tool, вибраного model:
 
 ```text
 model tool call
@@ -427,13 +425,13 @@ model tool call
 -> return observation/result
 ```
 
-Then apply it to this example:
+Потім застосуй його до прикладу:
 
 ```text
 get_current_weather(location="Paris", unit="Celsius")
 ```
 
-List what could fail at each step.
+Опиши, що може зламатися на кожному step.
 
 ### Unknowns
 
