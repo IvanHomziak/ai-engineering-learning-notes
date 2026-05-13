@@ -1,6 +1,6 @@
 ---
 type: daily-review-note
-topic: Layer 2 Raw Function Calling with Ollama JSON Schemas
+topic: Layer 2 Raw Function Calling з Ollama JSON Schemas
 area: Agents
 date: 2026-05-11
 tags:
@@ -21,11 +21,11 @@ review:
   - 2026-06-10
 ---
 
-# Daily Review Note: Layer 2 Raw Function Calling with Ollama JSON Schemas
+# Щоденна нотатка для повторення: Layer 2 Raw Function Calling з Ollama JSON Schemas
 
-## 1. Core idea
+## 1. Основна ідея
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 Layer 2 показує той самий e-commerce agent loop, але без LangChain chat model, LangChain `@tool`, LangChain message objects і LangChain `ToolMessage`.
 
@@ -38,22 +38,22 @@ Layer 2 показує той самий e-commerce agent loop, але без La
 - raw message dictionaries з ролями `system`, `user`, `tool`;
 - manual LangSmith tracing через `@traceable`.
 
-Головна ідея: LangChain abstraction приховує значну частину integration boilerplate. Коли LangChain прибрати, developer сам відповідає за tool schemas, provider-specific message format, SDK calls, tool dispatch і tracing.
+Головна ідея: LangChain abstraction приховує значну частину integration boilerplate. Якщо прибрати LangChain, developer сам відповідає за tool schemas, provider-specific message format, SDK calls, tool dispatch і tracing.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
-Це корисний exercise для AI Platform Engineer, бо production AI systems часто потребують розуміння нижнього рівня abstraction. Якщо framework ламається, маєш розуміти, що реально відбувається:
+Це корисна вправа для AI Platform Engineer, бо production AI systems часто потребують розуміння нижнього рівня abstraction. Якщо framework ламається, треба розуміти, що реально відбувається:
 
 ```text
 LLM request + tools schema -> structured tool_calls -> app dispatch -> tool result -> tool message -> next LLM request
 ```
 
-### Assumptions
+### Припущення
 
-- Нотатка базується тільки на transcript Section 6 і наданому файлі `2_agent_loop_raw_function_calling.py`.
+- Нотатка базується тільки на transcript Section 6 і файлі `2_agent_loop_raw_function_calling.py`.
 - Production-рекомендації нижче позначені окремо як additional backend / production context.
 
-### Unknowns
+### Невідоме / не підтверджено джерелом
 
 - Unknown / Not confirmed from source: повна формальна специфікація Ollama tool JSON schema.
 - Unknown / Not confirmed from source: точна поведінка Anthropic/OpenAI/Gemini schemas у деталях, бо source лише порівнює conceptually.
@@ -61,9 +61,9 @@ LLM request + tools schema -> structured tool_calls -> app dispatch -> tool resu
 
 ---
 
-## 2. Why it matters
+## 2. Чому це важливо
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 Layer 2 відповідає на питання: **що LangChain робив за нас у Layer 1?**
 
@@ -106,22 +106,22 @@ tools_for_llm = [
 ]
 ```
 
-Це показує cost of abstraction removal: контроль більший, але коду, vendor-specific details і maintenance більше.
+Це показує cost of abstraction removal: контроль більший, але більше коду, vendor-specific details і maintenance.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
-Це типова trade-off у platform engineering:
+Це типовий trade-off у platform engineering:
 
 | Approach | Benefit | Cost |
 |---|---|---|
 | LangChain abstraction | швидше розробляти, менше boilerplate, простіше switch provider | менше контролю, залежність від framework behavior |
-| Raw SDK | повний контроль, видно provider-specific behavior | більше schema/message boilerplate, важче portability, більше integration bugs |
+| Raw SDK | повний контроль, видно provider-specific behavior | більше schema/message boilerplate, важча portability, більше integration bugs |
 
 ---
 
-## 3. How it works
+## 3. Як це працює
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 #### Step 1 — Environment and imports
 
@@ -150,7 +150,7 @@ MODEL = "qwen3:1.7b"
 
 `MODEL` — локальна Ollama model, яку використовує source.
 
-#### Step 3 — Tools as plain Python functions
+#### Step 3 — Tools як plain Python functions
 
 ```python
 @traceable(run_type="tool")
@@ -178,29 +178,14 @@ def apply_discount(price: float, discount_tier: str) -> float:
 
 #### Step 4 — Manual JSON schemas
 
-```python
-tools_for_llm = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_product_price",
-            "description": "Look up the price of a product in the catalog.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "product": {
-                        "type": "string",
-                        "description": "The product name, e.g. 'laptop', 'headphones', 'keyboard'",
-                    },
-                },
-                "required": ["product"],
-            },
-        },
-    },
-]
-```
+Manual JSON schema — це representation tool contract для LLM. У source прямо сказано: це те, що LangChain `@tool` генерував автоматично з function signature і docstring.
 
-Це manual representation tool contract для LLM. У source прямо сказано: це те, що LangChain `@tool` генерував автоматично з function signature і docstring.
+Перший schema описує `get_product_price`:
+
+- function name: `get_product_price`;
+- description: lookup price in catalog;
+- required argument: `product`;
+- product type: `string`.
 
 Другий schema описує `apply_discount`:
 
@@ -210,13 +195,7 @@ tools_for_llm = [
 
 #### Step 5 — Ollama auto-generation note
 
-Source code notes:
-
-```python
-# Ollama can also auto-generate these schemas if you pass the functions
-# directly as tools ... However, this requires your docstrings to follow
-# the Google docstring format.
-```
+Source code зазначає, що Ollama може auto-generate schemas, якщо передати Python functions напряму як tools. Але для цього docstrings мають відповідати Google docstring format.
 
 Важливо: це стосується Ollama behavior. Source підкреслює, що vendor-specific behavior відрізняється.
 
@@ -255,7 +234,7 @@ messages = [
 
 LangChain `SystemMessage` і `HumanMessage` прибрані. Використовуються plain dictionaries, які відповідають Ollama SDK expected format.
 
-Source каже, що в інших vendors naming/format може відрізнятись, наприклад role naming.
+Source каже, що в інших vendors naming/format може відрізнятись.
 
 #### Step 9 — Raw agent loop
 
@@ -323,15 +302,13 @@ messages.append(
 
 ---
 
-## 4. Backend analogy
+## 4. Backend аналогія
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 Layer 2 показує той самий agent loop, але з raw SDK і manual contracts.
 
-### Additional backend / production context
-
-Backend analogy:
+### Додатковий backend / production context
 
 | Raw function calling code | Backend analogy |
 |---|---|
@@ -344,15 +321,15 @@ Backend analogy:
 | `{"role": "tool", "content": ...}` | result event/message added to workflow history |
 | manual `@traceable` | manual instrumentation / spans |
 
-This is similar to writing an integration adapter by hand instead of using a framework-level abstraction.
+Це схоже на написання integration adapter вручну замість використання framework-level abstraction.
 
 ---
 
 ## 5. Production relevance
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-Source explicitly shows these production-relevant concerns:
+Source явно показує такі production-relevant concerns:
 
 1. Without LangChain, schemas are manual.
 2. Ollama schema conventions differ from other vendors.
@@ -362,56 +339,56 @@ Source explicitly shows these production-relevant concerns:
 6. Vendor switching without LangChain has high development cost.
 7. Function calling still returns structured function name + arguments, but application executes the tool.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 #### Reliability risks
 
-- Manual schemas can drift from actual Python function signatures.
-- Required fields in schema may not match runtime function args.
-- Vendor-specific response shape can break parser code.
-- No `tool_call_id` in this flow can make correlation harder.
-- Silent default `0` for unknown product/tier can produce wrong business answer.
+- Manual schemas можуть drift від actual Python function signatures.
+- Required fields у schema можуть не відповідати runtime function args.
+- Vendor-specific response shape може зламати parser code.
+- Відсутність `tool_call_id` може ускладнити correlation.
+- Silent default `0` для unknown product/tier може створити wrong business answer.
 
 #### Security risks
 
-- Tool name from model output must be allowlisted through `tools_dict`.
-- Tool arguments must be validated before function execution.
-- Never expose arbitrary Python functions to LLM-controlled dispatch.
-- Tool schemas should not expose sensitive internal capabilities.
+- Tool name з model output має бути allowlisted через `tools_dict`.
+- Tool arguments треба validate перед function execution.
+- Не expose arbitrary Python functions для LLM-controlled dispatch.
+- Tool schemas не мають expose sensitive internal capabilities.
 
 #### Performance / cost risks
 
-- Every loop iteration is an LLM call.
-- Provider-specific manual integration increases maintenance cost.
-- Bigger schemas/messages increase prompt size.
-- Local Ollama avoids external API call cost but uses local compute and model quality can vary.
+- Кожна loop iteration — це LLM call.
+- Provider-specific manual integration збільшує maintenance cost.
+- Bigger schemas/messages збільшують prompt size.
+- Local Ollama уникає external API cost, але використовує local compute, і model quality може vary.
 
 #### Observability concerns
 
-- Raw SDK calls require manual instrumentation.
-- Trace should include iteration number, model response, selected tool, arguments, observation, and final answer.
-- Without framework help, trace consistency becomes developer responsibility.
+- Raw SDK calls потребують manual instrumentation.
+- Trace має включати iteration number, model response, selected tool, arguments, observation і final answer.
+- Без framework help trace consistency стає developer responsibility.
 
 ### Version-sensitive
 
-This note is version-sensitive because:
+Ця нотатка version-sensitive, бо:
 
-- Ollama SDK response objects and `tool_calls` structure may change.
-- Ollama support for passing Python functions directly as tools depends on SDK behavior.
-- LangSmith `@traceable` behavior may vary by package version.
-- Provider-specific tool schema formats are not guaranteed to be identical.
+- Ollama SDK response objects і `tool_calls` structure можуть змінитися.
+- Ollama support для passing Python functions directly as tools залежить від SDK behavior.
+- LangSmith `@traceable` behavior може vary by package version.
+- Provider-specific tool schema formats не гарантовано identical.
 
 ### Potential issue
 
-Source transcript says Ollama documentation does not clearly define all details of the JSON schema. Treat the exact schema requirements as provider-specific and verify against current Ollama docs/source before production use.
+Source transcript каже, що Ollama documentation не clearly define all details of JSON schema. Treat exact schema requirements as provider-specific і verify against current Ollama docs/source before production use.
 
-Another potential issue: source code has a comment `# --- Tools (LangChain @tool decorator) ---`, but actual code no longer uses LangChain `@tool`; it uses `@traceable`. This is likely a leftover comment.
+Інший potential issue: source code має comment `# --- Tools (LangChain @tool decorator) ---`, але actual code вже не використовує LangChain `@tool`; він використовує `@traceable`. Це likely leftover comment.
 
 ---
 
 ## 6. Key terms
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 | Term | Meaning |
 |---|---|
@@ -430,41 +407,41 @@ Another potential issue: source code has a comment `# --- Tools (LangChain @tool
 
 ---
 
-## 7. Common mistakes
+## 7. Типові помилки
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-1. Assuming LangChain `@tool` is just syntactic sugar.
-   - Source shows it hides schema generation and vendor-specific formatting.
+1. Думати, що LangChain `@tool` — це лише syntactic sugar.
+   - Source показує, що він приховує schema generation і vendor-specific formatting.
 
-2. Assuming all providers use the same tool schema.
-   - Transcript says Ollama and Anthropic schemas differ.
+2. Думати, що всі providers використовують однакову tool schema.
+   - Transcript каже, що Ollama і Anthropic schemas differ.
 
-3. Assuming Ollama function auto-conversion works with any docstring.
-   - Source says it requires Google-style docstrings.
+3. Думати, що Ollama function auto-conversion працює з будь-яким docstring.
+   - Source каже, що потрібен Google-style docstrings.
 
-4. Keeping LangChain-style message assumptions when using raw SDK.
-   - Raw Ollama uses dicts and its own response shape.
+4. Зберігати LangChain-style message assumptions при використанні raw SDK.
+   - Raw Ollama використовує dicts і власну response shape.
 
-5. Trying to use `tool.invoke(...)` after removing LangChain tools.
-   - In raw version, tools are plain functions and are called directly.
+5. Намагатися використовувати `tool.invoke(...)` після видалення LangChain tools.
+   - У raw version tools — plain functions і викликаються напряму.
 
-6. Forgetting manual tracing.
-   - Without LangChain, source adds `ollama_chat_traced` manually.
+6. Забути manual tracing.
+   - Без LangChain source додає `ollama_chat_traced` вручну.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 7. Schema drift.
-   - Function signature changes but JSON schema does not.
+   - Function signature змінюється, а JSON schema — ні.
 
 8. Weak argument validation.
-   - Model-produced `tool_args` should not be trusted blindly.
+   - Model-produced `tool_args` не можна blindly trust.
 
 9. Inconsistent provider adapters.
-   - Raw code often grows into scattered vendor-specific logic unless isolated behind clean interfaces.
+   - Raw code часто перетворюється на scattered vendor-specific logic, якщо не ізолювати його clean interfaces.
 
 10. Treating raw SDK code as simpler.
-   - It can be simpler for one provider, but more expensive once multiple providers, tracing, retries, schemas and evals are needed.
+   - Для одного provider це може бути simple, але стає expensive, коли є multiple providers, tracing, retries, schemas і evals.
 
 ---
 
@@ -472,62 +449,62 @@ Another potential issue: source code has a comment `# --- Tools (LangChain @tool
 
 | Question | Answer |
 |---|---|
-| What is Layer 2 about? | Implementing the same agent loop without LangChain objects, using raw Ollama SDK and manual JSON tool schemas. |
-| What replaces LangChain `@tool`? | Plain Python functions plus manual JSON schemas in `tools_for_llm`. |
-| What does LangChain `@tool` hide according to source? | JSON schema generation from function name, docstring, type hints and arguments. |
-| What replaces `llm_with_tools.invoke(...)`? | `ollama.chat(...)` wrapped in `ollama_chat_traced`. |
-| What replaces `SystemMessage` and `HumanMessage`? | Raw dictionaries with `role` and `content`. |
-| What replaces `ToolMessage`? | Raw dictionary with `role: "tool"` and `content` equal to the observation. |
-| How is selected tool name read in Ollama response? | Through `tool_call.function.name`. |
-| How are tool arguments read in Ollama response? | Through `tool_call.function.arguments`. |
-| How is the tool executed in raw version? | By calling the Python function directly: `tool_to_use(**tool_args)`. |
-| Why is vendor switching harder without LangChain? | Tool schemas, message formats, SDK calls and response shapes can differ by provider. |
-| Why is manual JSON schema risky? | It can drift from real function signatures and create runtime bugs. |
-| What is the main lesson of Layer 2? | Function calling is structured API behavior, not magic; LangChain mainly reduces integration boilerplate. |
+| Про що Layer 2? | Про реалізацію того самого agent loop без LangChain objects, через raw Ollama SDK і manual JSON tool schemas. |
+| Що замінює LangChain `@tool`? | Plain Python functions плюс manual JSON schemas у `tools_for_llm`. |
+| Що приховує LangChain `@tool` according to source? | JSON schema generation із function name, docstring, type hints і arguments. |
+| Що замінює `llm_with_tools.invoke(...)`? | `ollama.chat(...)`, обгорнутий у `ollama_chat_traced`. |
+| Що замінює `SystemMessage` і `HumanMessage`? | Raw dictionaries з `role` і `content`. |
+| Що замінює `ToolMessage`? | Raw dictionary з `role: "tool"` і `content`, рівним observation. |
+| Як читається selected tool name в Ollama response? | Через `tool_call.function.name`. |
+| Як читаються tool arguments в Ollama response? | Через `tool_call.function.arguments`. |
+| Як виконується tool у raw version? | Через direct Python call: `tool_to_use(**tool_args)`. |
+| Чому vendor switching складніший без LangChain? | Tool schemas, message formats, SDK calls і response shapes можуть відрізнятися між providers. |
+| Чому manual JSON schema risky? | Вона може drift від real function signatures і створити runtime bugs. |
+| Головний lesson Layer 2? | Function calling — structured API behavior, не magic; LangChain переважно зменшує integration boilerplate. |
 
 ---
 
 ## 9. Interview Q&A
 
-### Q1: What problem does Layer 2 demonstrate?
+### Q1: Яку проблему демонструє Layer 2?
 
-**Answer:** It demonstrates what LangChain abstracts away when implementing tool-calling agents: tool schema generation, message formatting, SDK invocation, tool dispatch format and tracing integration.
+**Answer:** Він демонструє, що LangChain abstracts away під час tool-calling agents: tool schema generation, message formatting, SDK invocation, tool dispatch format і tracing integration.
 
-### Q2: How does raw function calling differ from LangChain tool calling?
+### Q2: Чим raw function calling відрізняється від LangChain tool calling?
 
-**Answer:** In LangChain, tools are decorated with `@tool`, bound with `bind_tools`, invoked through `tool.invoke`, and observations are sent via `ToolMessage`. In raw Ollama, schemas are manually written, `ollama.chat` is called directly, tool calls are parsed from Ollama response objects, tools are called as Python functions, and observations are appended as raw dicts.
+**Answer:** У LangChain tools decorated with `@tool`, bound with `bind_tools`, invoked through `tool.invoke`, а observations надсилаються через `ToolMessage`. У raw Ollama schemas пишуться manually, `ollama.chat` викликається напряму, tool calls парсяться з Ollama response objects, tools викликаються як Python functions, а observations append як raw dicts.
 
-### Q3: Why are JSON schemas needed?
+### Q3: Навіщо JSON schemas?
 
-**Answer:** The LLM needs structured descriptions of available tools: function name, description, parameters, types and required arguments. This lets the model return structured tool calls.
+**Answer:** LLM потрібні structured descriptions available tools: function name, description, parameters, types і required arguments. Це дозволяє model return structured tool calls.
 
-### Q4: Why does the source say documentation clarity matters?
+### Q4: Чому documentation clarity важлива?
 
-**Answer:** Because without a clear formal schema definition, developers must infer required schema shape from examples or source code, which increases integration risk.
+**Answer:** Без clear formal schema definition developers мають infer required schema shape з examples або source code, що збільшує integration risk.
 
-### Q5: Why is provider portability expensive without LangChain?
+### Q5: Чому provider portability дорога без LangChain?
 
-**Answer:** Different providers may have different schema formats, role names, SDK request shapes and response structures. Switching providers can require rewriting integration code.
+**Answer:** Different providers можуть мати різні schema formats, role names, SDK request shapes і response structures. Switching providers може вимагати rewrite integration code.
 
-### Q6: What is the role of `tools_dict`?
+### Q6: Яка роль `tools_dict`?
 
-**Answer:** It maps model-selected tool names to actual Python functions so application code can execute the selected tool.
+**Answer:** Він maps model-selected tool names to actual Python functions, щоб application code міг execute selected tool.
 
-### Q7: What is an observation in this raw implementation?
+### Q7: Що таке observation у raw implementation?
 
-**Answer:** It is the result of executing the Python function selected by the model. The observation is converted to string and appended to messages as a `tool` role message.
+**Answer:** Це result executing Python function selected by model. Observation converts to string і appends to messages as `tool` role message.
 
-### Q8: Why is manual tracing needed?
+### Q8: Чому потрібен manual tracing?
 
-**Answer:** Without LangChain model abstractions, LangSmith does not automatically wrap the raw Ollama call, so the source creates `ollama_chat_traced` with `@traceable(run_type="llm")`.
+**Answer:** Без LangChain model abstractions LangSmith не обгортає raw Ollama call automatically, тому source створює `ollama_chat_traced` з `@traceable(run_type="llm")`.
 
-### Q9: What production risk comes from manual JSON schemas?
+### Q9: Який production risk від manual JSON schemas?
 
-**Answer:** Schema drift: the Python function signature can change while the JSON schema remains stale, causing wrong arguments, missing required fields or runtime errors.
+**Answer:** Schema drift: Python function signature може змінитися, а JSON schema лишиться stale, causing wrong arguments, missing required fields or runtime errors.
 
-### Q10: What is the key lesson from removing LangChain in Layer 2?
+### Q10: Головний lesson removing LangChain у Layer 2?
 
-**Answer:** LangChain is not magic; it standardizes common integration tasks. Removing it exposes the raw mechanics and the maintenance cost of provider-specific implementation.
+**Answer:** LangChain не magic; він standardizes common integration tasks. Removing it exposes raw mechanics і maintenance cost provider-specific implementation.
 
 ---
 
@@ -535,43 +512,43 @@ Another potential issue: source code has a comment `# --- Tools (LangChain @tool
 
 Answer without looking:
 
-1. What file implements Layer 2?
-2. What imports remain after removing LangChain objects?
-3. What replaces `@tool`?
-4. What is `tools_for_llm`?
-5. What does `ollama_chat_traced` do?
-6. Why is `tools_dict` written manually?
-7. How do we read selected tool name in Ollama response?
-8. How do we execute the selected tool?
-9. What replaces `ToolMessage`?
-10. Why is provider switching harder in raw SDK code?
+1. Який file implements Layer 2?
+2. Які imports залишаються після removing LangChain objects?
+3. Що замінює `@tool`?
+4. Що таке `tools_for_llm`?
+5. Що робить `ollama_chat_traced`?
+6. Чому `tools_dict` написаний вручну?
+7. Як читати selected tool name в Ollama response?
+8. Як execute selected tool?
+9. Що замінює `ToolMessage`?
+10. Чому provider switching складніший у raw SDK code?
 
 Expected answers:
 
 1. `2_agent_loop_raw_function_calling.py`.
 2. `load_dotenv`, `ollama`, `traceable`.
-3. Plain Python functions plus manual JSON schemas and `@traceable` for tracing.
-4. A list of manual JSON schemas describing tools for the LLM.
-5. Wraps `ollama.chat(...)` and traces it as an LLM call in LangSmith.
-6. Because there are no LangChain tool objects with `.name`; mapping is needed for dispatch.
+3. Plain Python functions плюс manual JSON schemas і `@traceable` для tracing.
+4. List manual JSON schemas describing tools for the LLM.
+5. Wraps `ollama.chat(...)` і traces it as an LLM call in LangSmith.
+6. Бо немає LangChain tool objects із `.name`; mapping потрібен для dispatch.
 7. `tool_call.function.name`.
 8. `tool_to_use(**tool_args)`.
-9. A raw dict: `{"role": "tool", "content": str(observation)}`.
-10. Because schemas, message roles, SDK calls and response structures are provider-specific.
+9. Raw dict: `{"role": "tool", "content": str(observation)}`.
+10. Бо schemas, message roles, SDK calls і response structures provider-specific.
 
 ---
 
-## 11. Mini practice task
+## 11. Міні-практика
 
-### Source-based practice
+### Практика на основі джерела
 
-Run Layer 2:
+Запусти Layer 2:
 
 ```bash
 uv run python 2_agent_loop_raw_function_calling.py
 ```
 
-Verify the expected loop:
+Перевір expected loop:
 
 ```text
 Iteration 1: get_product_price(product='laptop') -> 1299.99
@@ -579,16 +556,16 @@ Iteration 2: apply_discount(price=1299.99, discount_tier='gold') -> 1000.99
 Iteration 3: no tool calls -> final answer
 ```
 
-Then inspect LangSmith trace and confirm:
+Потім переглянь LangSmith trace і підтвердь:
 
 - trace name is `Ollama Agent Loop`;
 - LLM call is `Ollama Chat`;
 - tool calls are traced separately;
 - observation is appended as raw `tool` role message.
 
-### Additional backend / production context task
+### Додатковий backend / production context task
 
-Improve raw implementation safety:
+Покращ raw implementation safety:
 
 1. Add validation that `tool_name` is allowlisted.
 2. Validate `tool_args` against expected argument names.
