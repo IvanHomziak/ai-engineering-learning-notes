@@ -1,6 +1,6 @@
 ---
 type: daily-review-note
-topic: Prompt Engineering Theory Basics: Prompts, Shot Prompting, CoT, ReAct, Context Engineering
+topic: Основи теорії Prompt Engineering: Prompts, Shot Prompting, CoT, ReAct, Context Engineering
 area: Prompt Engineering
 date: 2026-05-12
 tags:
@@ -24,11 +24,11 @@ source_type: transcript
 source_confidence: medium
 ---
 
-# Daily Review Note: Prompt Engineering Theory Basics
+# Щоденна нотатка для повторення: Основи теорії Prompt Engineering
 
-## 1. Core idea
+## 1. Основна ідея
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 Цей матеріал пояснює базову теорію prompt engineering:
 
@@ -42,13 +42,13 @@ source_confidence: medium
 - Context engineering — еволюція prompt engineering: важливо не лише написати static prompt, а динамічно зібрати правильний context.
 - System prompt має бути не надто vague і не надто over-specific; потрібна “золота середина”.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 Для backend / AI Platform engineer prompt — це не просто текст. Це runtime contract між application і model.
 
 Prompt впливає на:
 
-- output consistency;
+- consistency output;
 - tool selection;
 - hallucination risk;
 - latency і token cost;
@@ -56,13 +56,13 @@ Prompt впливає на:
 - debugging complexity;
 - evaluation quality.
 
-### Assumptions
+### Припущення
 
 - Нотатка базується тільки на наданому transcript Section 11.
 - Зовнішні links у матеріалі не перевірялись окремо.
-- Історичні/фінансові/модельні claims із transcript не розширюються.
+- Історичні, фінансові й модельні claims із transcript не розширюються.
 
-### Unknowns
+### Невідоме / не підтверджено джерелом
 
 - Unknown / Not confirmed from source: точна кількість training words для GPT-3.
 - Unknown / Not confirmed from source: точна кількість downloads prompt `hwchase17/react` або stars у згаданому GitHub repo на поточну дату.
@@ -70,9 +70,9 @@ Prompt впливає на:
 
 ---
 
-## 2. Why it matters
+## 2. Чому це важливо
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 Prompt engineering потрібен, щоб краще керувати поведінкою LLM:
 
@@ -84,7 +84,7 @@ Prompt engineering потрібен, щоб краще керувати пове
 - context engineering вирішує проблему dynamic context у agents, coding assistants і long-running workflows;
 - system prompts задають identity, scope, boundaries і general behavior.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 У production LLM systems prompt design напряму впливає на reliability. Слабкий prompt може призвести до:
 
@@ -98,11 +98,11 @@ Prompt engineering потрібен, щоб краще керувати пове
 
 ---
 
-## 3. How it works
+## 3. Як це працює
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-#### 3.1 Language model mental model
+#### 3.1 Mental model language model
 
 Language modeling у матеріалі пояснюється як задача прогнозування наступного word/token на основі попередньої sequence.
 
@@ -114,11 +114,11 @@ previous words/context -> probability distribution over next word -> chosen next
 
 LLM — це language model, навчений на великому обсязі data. Коли ми даємо prompt, model генерує відповідь word/token by word/token, прогнозуючи найбільш імовірне продовження в context.
 
-#### 3.2 Prompt components
+#### 3.2 Компоненти prompt
 
 Prompt складається з чотирьох частин:
 
-| Component | Source-based meaning |
+| Component | Meaning на основі джерела |
 |---|---|
 | Instruction | Що model має зробити |
 | Context | Додаткова інформація для кращого розуміння задачі |
@@ -167,7 +167,7 @@ Thought -> Action -> Observation -> Thought -> Action -> Observation -> Final An
 
 Source пояснює, що ReAct дозволяє model не лише міркувати, а й діяти через external sources/tools. Code/application бере action з model output, виконує його і повертає observation назад у prompt/context.
 
-#### 3.7 Prompt engineering quick tips
+#### 3.7 Швидкі поради з prompt engineering
 
 Source дає три практичні tips:
 
@@ -208,15 +208,13 @@ Good system prompt не має бути:
 
 ---
 
-## 4. Backend analogy
+## 4. Backend аналогія
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 Prompt задає model задачу й context. ReAct prompt задає protocol взаємодії: reasoning, action, observation, final answer.
 
-### Additional backend / production context
-
-Backend analogy:
+### Додатковий backend / production context
 
 | Prompt Engineering concept | Backend / distributed systems analogy |
 |---|---|
@@ -243,9 +241,9 @@ Context engineering = building the runtime system that assembles the right contr
 
 ## 5. Production relevance
 
-### Source-based explanation
+### Пояснення на основі джерела
 
-The transcript highlights these production-relevant ideas:
+Transcript highlights these production-relevant ideas:
 
 - vague prompts lead to inconsistent behavior;
 - missing context makes model guess;
@@ -256,11 +254,11 @@ The transcript highlights these production-relevant ideas:
 - context clash happens when context parts contradict each other;
 - system prompts evolve iteratively as models and agents evolve.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 #### Reliability
 
-Prompt must be tested like code:
+Prompt треба тестувати як code:
 
 - regression prompts;
 - golden datasets;
@@ -284,7 +282,7 @@ Track:
 
 #### Security
 
-Prompt/context can be attack surface:
+Prompt/context може бути attack surface:
 
 - prompt injection;
 - malicious instructions inside retrieved context;
@@ -294,7 +292,7 @@ Prompt/context can be attack surface:
 
 #### Cost/performance
 
-Context engineering affects:
+Context engineering впливає на:
 
 - input tokens;
 - output tokens;
@@ -315,17 +313,17 @@ Avoid system prompts that are:
 
 ### Version-sensitive / may require verification
 
-The material contains claims about model training scale, public prompt downloads, stars in repositories, vendor/model behavior and external agent prompts. These are time-sensitive or source-sensitive and should be verified before being reused as factual claims outside this learning note.
+Material contains claims about model training scale, public prompt downloads, stars in repositories, vendor/model behavior and external agent prompts. These are time-sensitive or source-sensitive and should be verified before reuse as factual claims outside this learning note.
 
 ---
 
 ## 6. Key terms
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 | Term | Meaning |
 |---|---|
-| Language model | Model that predicts next word/token based on prior sequence/context |
+| Language model | Model, що predicts next word/token based on prior sequence/context |
 | LLM | Large language model trained on a large amount of data |
 | Prompt | Input given to AI model to produce output |
 | Instruction | Task the model should perform |
@@ -346,9 +344,9 @@ The material contains claims about model training scale, public prompt downloads
 
 ---
 
-## 7. Common mistakes
+## 7. Типові помилки
 
-### Source-based explanation
+### Пояснення на основі джерела
 
 1. Writing prompts without context.
    - Model guesses missing assumptions.
@@ -368,7 +366,7 @@ The material contains claims about model training scale, public prompt downloads
 6. Ignoring iteration.
    - Prompt quality improves through testing outputs and refining prompt.
 
-### Additional backend / production context
+### Додатковий backend / production context
 
 7. No prompt versioning.
    - Makes regressions hard to debug.
@@ -386,79 +384,79 @@ The material contains claims about model training scale, public prompt downloads
 
 ## 8. Flashcards
 
-Q: What is a prompt in this source?
-A: Input given to an AI model to guide it toward producing an output.
+Q: Що таке prompt у цьому source?
+A: Input, який дають AI model, щоб спрямувати її на producing output.
 
-Q: What are the four prompt components?
-A: Instruction, context, input data, and output indicator.
+Q: Які чотири компоненти prompt?
+A: Instruction, context, input data і output indicator.
 
-Q: What is zero-shot prompting?
-A: Asking the model to perform a task without providing examples.
+Q: Що таке zero-shot prompting?
+A: Запит до model виконати task без прикладів.
 
-Q: What is few-shot prompting?
-A: Providing a small number of examples so the model can imitate the expected pattern.
+Q: Що таке few-shot prompting?
+A: Надання кількох прикладів, щоб model могла imitate expected pattern.
 
-Q: What is one-shot prompting?
-A: A subset of few-shot prompting with exactly one example.
+Q: Що таке one-shot prompting?
+A: Підтип few-shot prompting з рівно одним example.
 
-Q: What is chain-of-thought prompting?
-A: Prompting that guides the model to solve complex tasks through intermediate reasoning steps.
+Q: Що таке chain-of-thought prompting?
+A: Prompting, який спрямовує model вирішувати complex tasks через intermediate reasoning steps.
 
-Q: What does ReAct combine?
-A: Reasoning and acting: the model reasons, chooses actions, observes results, and continues.
+Q: Що поєднує ReAct?
+A: Reasoning і acting: model reasons, chooses actions, observes results, and continues.
 
-Q: What is context engineering?
-A: Dynamically assembling the correct and relevant context for an LLM call.
+Q: Що таке context engineering?
+A: Dynamic assembling correct and relevant context для LLM call.
 
-Q: What is context poisoning?
-A: When hallucinated or bad context enters future context and degrades the system.
+Q: Що таке context poisoning?
+A: Коли hallucinated або bad context потрапляє у future context і degrades system.
 
-Q: What is the system prompt Goldilocks idea?
-A: A good system prompt should be neither too vague nor too specific; it should give just enough guidance.
+Q: Що таке system prompt Goldilocks idea?
+A: Good system prompt має бути neither too vague nor too specific; він має давати just enough guidance.
 
 ---
 
 ## 9. Interview Q&A
 
-### Q1: What is prompt engineering?
+### Q1: Що таке prompt engineering?
 
-**Answer:** Prompt engineering is designing the model input so the LLM has clear task instructions, enough context, relevant input data and an expected output signal.
+**Answer:** Prompt engineering — це designing model input так, щоб LLM мала clear task instructions, enough context, relevant input data and expected output signal.
 
-### Q2: What are the main components of a prompt?
+### Q2: Які main components prompt?
 
 **Answer:** Instruction, context, input data and output indicator.
 
-### Q3: When is zero-shot prompting useful?
+### Q3: Коли zero-shot prompting useful?
 
-**Answer:** When the task is simple, broad, or the model likely has enough prior knowledge. It is fast but gives less control.
+**Answer:** Коли task simple, broad або model likely має enough prior knowledge. Це fast, але дає less control.
 
-### Q4: Why use few-shot prompting?
+### Q4: Навіщо few-shot prompting?
 
-**Answer:** To guide the model with examples of the desired output style, structure or reasoning pattern.
+**Answer:** Щоб guide model examples desired output style, structure or reasoning pattern.
 
-### Q5: What is the difference between chain-of-thought and ReAct?
+### Q5: Різниця між chain-of-thought і ReAct?
 
 **Answer:** Chain-of-thought focuses on intermediate reasoning steps. ReAct combines reasoning with actions and observations from external tools or sources.
 
-### Q6: Why is context engineering important for agents?
+### Q6: Чому context engineering важливий для agents?
 
 **Answer:** Agents accumulate user inputs, tool results and prior interactions. Wrong or excessive context can increase cost, latency and degrade performance.
 
-### Q7: What are common context failure modes?
+### Q7: Які common context failure modes?
 
 **Answer:** Context poisoning, context confusion, context clash and context window growth.
 
-### Q8: What is a bad system prompt?
+### Q8: Що таке bad system prompt?
 
-**Answer:** One that is either too vague to guide behavior or too rigid and over-specified, causing brittle behavior and maintenance issues.
+**Answer:** Prompt, який або too vague to guide behavior, або too rigid and over-specified, causing brittle behavior and maintenance issues.
 
-### Q9: What production practices should prompt changes follow?
+### Q9: Які production practices should prompt changes follow?
 
 **Answer:** Version prompts, evaluate on test cases, track latency/cost/output quality, and monitor failures after rollout.
 
-### Q10: Why should prompt engineering be iterative?
+### Q10: Чому prompt engineering має бути iterative?
 
-**Answer:** Because model output reveals where the prompt is unclear; each iteration refines task, context, specificity and expected output.
+**Answer:** Бо model output показує, де prompt unclear; кожна iteration refines task, context, specificity and expected output.
 
 ---
 
@@ -466,16 +464,16 @@ A: A good system prompt should be neither too vague nor too specific; it should 
 
 Answer without looking:
 
-1. What is the simplified mental model of an LLM from this source?
-2. What are the four components of a prompt?
-3. What is the main limitation of zero-shot prompting?
-4. How does few-shot prompting reduce model freedom?
-5. What does chain-of-thought add?
-6. What does ReAct add on top of reasoning?
-7. Why is context engineering more than prompt engineering?
-8. What are context poisoning, confusion and clash?
-9. Why can too-specific system prompts be bad?
-10. Why can too-vague system prompts be bad?
+1. Яка simplified mental model LLM із цього source?
+2. Які four components prompt?
+3. Main limitation zero-shot prompting?
+4. Як few-shot prompting reduces model freedom?
+5. Що додає chain-of-thought?
+6. Що ReAct додає поверх reasoning?
+7. Чому context engineering більше, ніж prompt engineering?
+8. Що таке context poisoning, confusion and clash?
+9. Чому too-specific system prompts can be bad?
+10. Чому too-vague system prompts can be bad?
 
 Expected answers:
 
@@ -492,39 +490,39 @@ Expected answers:
 
 ---
 
-## 11. Mini practice task
+## 11. Міні-практика
 
-### Source-based practice
+### Практика на основі джерела
 
-Take this vague prompt:
+Візьми vague prompt:
 
 ```text
 Improve the user experience of this e-commerce website.
 ```
 
-Rewrite it using the four prompt components:
+Перепиши його через чотири prompt components:
 
 1. Instruction
 2. Context
 3. Input data
 4. Output indicator
 
-Then create:
+Потім створи:
 
-- one zero-shot version;
-- one one-shot version;
-- one few-shot version.
+- zero-shot version;
+- one-shot version;
+- few-shot version.
 
-Compare which one gives the most targeted output.
+Порівняй, який варіант дає most targeted output.
 
-### Additional backend / production context task
+### Додатковий backend / production context task
 
-Design a small prompt evaluation table for an AI support assistant:
+Спроєктуй small prompt evaluation table для AI support assistant:
 
 | Test case | Prompt version | Expected behavior | Actual behavior | Pass/Fail | Notes |
 |---|---|---|---|---|---|
 
-Include at least:
+Включи принаймні:
 
 - ambiguous user request;
 - missing context;
