@@ -18,8 +18,12 @@ review:
   - 2026-05-20
   - 2026-05-27
   - 2026-06-12
-source_type: transcript
+source_type: mixed
 source_confidence: medium
+verified_against_external_sources: 2026-05-16
+external_sources:
+  - OpenAI official post: Function calling and other API updates, June 13 2023
+  - OpenAI API docs: Function calling guide
 ---
 
 # Щоденна нотатка для повторення: Function Calling / Tool Calling для LLM-агентів
@@ -50,6 +54,12 @@ function calling дозволяє моделі повернути структу
 
 У джерелі function calling подано як production-орієнтовану еволюцію ReAct prompt, бо JSON-подібний structured output легше парсити, ніж free-form text через regular expressions.
 
+### External documentation verification
+
+Офіційний OpenAI release note від 13 червня 2023 підтверджує core claim: developers could describe functions to selected models, and models could output a JSON object containing arguments to call those functions. OpenAI також прямо описує use cases: connecting to external tools/APIs, converting natural language to API/database calls, and extracting structured data.
+
+Important security correction from official OpenAI note: tool outputs can contain untrusted instructions and may cause unintended actions. For real-world impact actions, such as sending emails, posting online, or making purchases, user confirmation is recommended.
+
 ### Додатковий backend / production context
 
 Function calling найкраще розуміти як механізм вибору команди за допомогою моделі:
@@ -62,14 +72,14 @@ LLM **не виконує** функцію. Вона лише пропонує f
 
 ### Припущення
 
-- Нотатка базується тільки на наданому transcript з Section 8: Function Calling.
-- Зовнішня документація не перевірялась для цієї нотатки.
-- Claims про vendors/models трактуються як version-sensitive.
+- Основна нотатка базується на transcript Section 8: Function Calling.
+- External verification використано для уточнення official OpenAI framing, date, JSON-arguments behavior and security caveats.
+- Claims про vendors/models залишаються version-sensitive.
 
 ### Невідоме / не підтверджено джерелом
 
 - Unknown / Not confirmed from source: точний response format для кожного provider.
-- Unknown / Not confirmed from source: точний schema syntax для OpenAI, Anthropic, Google або інших vendors.
+- Unknown / Not confirmed from source: точний schema syntax для Anthropic, Google або інших vendors.
 - Unknown / Not confirmed from source: чи кожна актуальна модель конкретного vendor підтримує function calling.
 
 ---
@@ -86,6 +96,10 @@ Function calling покращує це тим, що змушує модель п
 
 1. Підключення LLM до external tools.
 2. Отримання structured output від LLM.
+
+### External documentation verification
+
+OpenAI official wording supports both capabilities: function calling can connect model capabilities to external tools/APIs and can return structured data from the model.
 
 ### Додатковий backend / production context
 
@@ -187,6 +201,10 @@ Function calling = LLM створює typed command request; backend валід�
 
 Джерело також називає один drawback: **opaque reasoning process**. Model може повернути тільки final function name і arguments, не пояснюючи, чому вона їх вибрала.
 
+### External documentation verification
+
+Official OpenAI docs confirm a major security concern that should be treated as production-relevant: untrusted tool output can instruct the model to perform unintended actions. This makes tool output a prompt-injection surface, not just a normal service response.
+
 ### Додатковий backend / production context
 
 #### Reliability
@@ -208,7 +226,8 @@ Tool execution — це trust boundary:
 - валідовуй усі arguments;
 - обмежуй tools за user permissions;
 - не expose sensitive internal functions;
-- додавай human approval для high-risk actions.
+- не довіряй tool output як trusted instruction;
+- додавай human approval для high-risk actions, особливо email, posting, purchases або irreversible changes.
 
 #### Observability
 
@@ -221,7 +240,8 @@ Tool execution — це trust boundary:
 - validation result;
 - tool latency;
 - tool result;
-- final answer.
+- final answer;
+- whether user confirmation was required/performed.
 
 #### Cost/performance
 
@@ -235,15 +255,17 @@ Tool execution — це trust boundary:
 
 ### Version-sensitive / may require verification
 
-Матеріал містить claims, які залежать від version/provider:
+Confirmed but still historically scoped:
 
-- function calling was introduced by OpenAI in 2023;
+- OpenAI announced function calling capability in Chat Completions API on June 13, 2023.
+
+Still version/provider-sensitive:
+
 - big vendors' state-of-the-art models generally support function calling;
 - vendors have “perfected” function calling;
 - function calling is the de facto standard;
-- function calling is more deterministic/reliable than ReAct prompting.
-
-Ці твердження можуть бути directionally useful, але їх треба перевіряти по current provider docs і target model behavior перед production use.
+- function calling is more deterministic/reliable than ReAct prompting;
+- exact function/tool schema and response format for each provider.
 
 ---
 
@@ -262,6 +284,7 @@ Tool execution — це trust boundary:
 | External tool | Function/API поза LLM, який application code може виконати |
 | Opaque reasoning | Model повертає function call без intermediate rationale |
 | Schema | Опис очікуваних function arguments і structure |
+| Tool-output injection | Risk where untrusted tool output contains instructions that can steer the model toward unintended actions |
 
 ---
 
@@ -298,6 +321,9 @@ Tool execution — це trust boundary:
 9. Не мати evaluation для tool-call accuracy.
    - Потрібні tests для function selection і argument correctness.
 
+10. Treating tool output as trusted instructions.
+   - Official OpenAI material warns that untrusted tool data can instruct the model to perform unintended actions.
+
 ---
 
 ## 8. Flashcards
@@ -323,8 +349,8 @@ A: Підключення LLM до external tools і отримання structur
 Q: Який головний drawback згадано в джерелі?
 A: Opaque reasoning: model може не пояснювати, чому вибрала конкретну function і arguments.
 
-Q: Чому regex parsing fragile?
-A: Маленька formatting/token помилка може зламати parsing і agent execution.
+Q: Яка security correction з official OpenAI docs?
+A: Tool output може містити untrusted instructions і спричинити unintended actions; для real-world impact потрібна user confirmation.
 
 Q: Що production code має зробити перед tool execution?
 A: Validate function name, arguments, permissions і safety constraints.
@@ -362,11 +388,11 @@ A: Function calling — це typed command request, згенерований LLM
 
 ### Q7: Які failure modes залишаються?
 
-**Answer:** Wrong tool selection, invalid arguments, hallucinated values, missing fields, unauthorized actions, tool timeout і bad tool result handling.
+**Answer:** Wrong tool selection, invalid arguments, hallucinated values, missing fields, unauthorized actions, tool timeout, bad tool result handling and tool-output injection.
 
 ### Q8: Як production systems мають обробляти function calls?
 
-**Answer:** Через tool allowlists, schema validation, authorization, retries/timeouts, tracing, audit logs і evaluation datasets для tool-call accuracy.
+**Answer:** Через tool allowlists, schema validation, authorization, retries/timeouts, tracing, audit logs, human confirmation for high-risk actions, and evaluation datasets for tool-call accuracy.
 
 ---
 
@@ -381,7 +407,7 @@ Answer without looking:
 5. Чому function calling може використовувати менше tokens, ніж ReAct?
 6. Що означає opaque reasoning?
 7. Що треба validate перед tool execution?
-8. Які claims є version-sensitive?
+8. Яка security correction з official OpenAI docs?
 
 Expected answers:
 
@@ -392,7 +418,7 @@ Expected answers:
 5. Він не мусить emit verbose reasoning/Thought traces.
 6. Model дає function name/args, але не intermediate rationale.
 7. Tool name, arguments, permissions, safety constraints і schema conformity.
-8. Claims про vendor support, reliability, de facto standards і exact history of function calling.
+8. Tool output can contain untrusted instructions; real-world impact actions should require confirmation.
 
 ---
 
@@ -419,6 +445,8 @@ model tool call
 -> check tool name is allowlisted
 -> validate arguments against schema
 -> check user authorization
+-> inspect tool output as untrusted context
+-> require user confirmation for real-world impact actions
 -> apply timeout/retry policy
 -> execute tool
 -> log trace/audit event
