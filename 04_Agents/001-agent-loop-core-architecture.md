@@ -20,6 +20,14 @@ review:
   - 2026-05-17
   - 2026-05-24
   - 2026-06-09
+source_type: mixed
+source_confidence: medium
+verified_against_external_sources: 2026-05-16
+external_sources:
+  - arXiv 2210.03629: ReAct: Synergizing Reasoning and Acting in Language Models
+  - LangChain documentation: tools and tool calling
+  - LangSmith documentation: traceable decorator / custom instrumentation
+  - Ollama documentation: tool calling
 ---
 
 # Щоденна нотатка для повторення: Core Architecture of AI Agents
@@ -43,6 +51,12 @@ Tools у source code:
 - `get_product_price(product: str) -> float`
 - `apply_discount(price: float, discount_tier: str) -> float`
 
+### External documentation verification
+
+External verification confirms the ReAct paper is from **2022** on arXiv (`2210.03629`), not 2023. The earlier note had left the date contradiction unresolved; this version resolves it: the transcript’s “2023” claim should be treated as inaccurate for the paper publication/preprint date.
+
+External docs also support the general implementation framing: LangChain tools can be created from Python functions and bound to chat models, while raw provider SDKs require provider-specific request/response handling.
+
 ### Додатковий backend / production context
 
 Ментальна модель для backend engineer: agent loop — це не магія, а orchestration loop з такими етапами:
@@ -56,6 +70,7 @@ request -> LLM decision -> tool dispatch -> tool result -> context update -> nex
 ### Припущення
 
 - Нотатка базується на transcript + наданих файлах `README.md`, `1_agent_loop_langchain_tool_calling.py`, `2_agent_loop_raw_function_calling.py`, `3_raw_react_prompt.py`, `pyproject.toml`.
+- External verification використано для виправлення ReAct date і уточнення general framework/tool-calling behavior.
 - Висновки про production наведені окремо як backend / production context.
 
 ### Невідоме / не підтверджено джерелом
@@ -84,10 +99,6 @@ request -> LLM decision -> tool dispatch -> tool result -> context update -> nex
 1. **Debuggability** — треба розуміти, де зламався flow: model decision, tool schema, argument parsing, tool execution, observation injection, final answer.
 2. **Portability** — LangChain abstraction дозволяє простіше міняти model provider, але raw SDK підхід дає більше контролю.
 3. **Operational safety** — якщо agent може викликати tools, тоді tool execution стає production boundary: потрібні validation, authorization, retries, timeouts, rate limits, audit logs.
-
-### Невідоме / не підтверджено джерелом
-
-- Unknown / Not confirmed from source: конкретні latency, cost, reliability характеристики LangChain vs raw Ollama implementation.
 
 ---
 
@@ -137,7 +148,7 @@ action_input_match = re.search(r"Action Input:\s*(.+)", output)
 | Layer | Tool representation | LLM output | Parsing | Tool execution | History / observation |
 |---|---|---|---|---|---|
 | LangChain tool calling | functions, decorated через `@tool` | structured `tool_calls` | `ai_message.tool_calls[0]` | `tool.invoke(tool_args)` | append `ToolMessage` |
-| Raw function calling | manual JSON schemas | structured `tool_calls` | `tool_call.function.name`, `tool_call.function.arguments` | direct function call `tool_to_use(**tool_args)` | append raw `{role: "tool"}` dict |
+| Raw function calling | manual JSON schemas | structured `tool_calls` | `tool_call.function.name`, `tool_call.function.arguments` | direct function call `tool_to_use(**tool_args)` | append raw tool message; verify provider-required fields like `tool_name` |
 | Raw ReAct prompt | plain text tool descriptions у prompt | raw text із `Thought`, `Action`, `Action Input` | regex | direct function call `tools[tool_name](*args)` | append growing scratchpad string |
 
 ### Додатковий backend / production context
@@ -202,9 +213,11 @@ Source explicitly uses:
 - `uv` для environment setup;
 - `pyproject.toml` і `uv.lock` для dependencies and exact versions.
 
-### Додатковий backend / production context
+### External documentation verification
 
-Production risks and concerns:
+Current docs confirm this area is version-sensitive: LangChain, LangSmith and Ollama all expose concrete APIs whose request/response shapes and package paths can evolve. Keep implementation notes tied to the actual installed dependency versions.
+
+### Додатковий backend / production context
 
 #### Reliability
 
@@ -240,12 +253,7 @@ This material is version-sensitive because LangChain, Ollama SDK, model tool-cal
 
 ### Potential issue
 
-Source material contains a date inconsistency around ReAct:
-
-- Transcript says the ReAct paper appeared in 2023.
-- README says ReAct pattern comes from Yao et al. 2022.
-
-This note does not resolve that contradiction using external sources. Treat the exact publication date as Unknown / Not confirmed from source.
+Corrected: Source material had a date inconsistency around ReAct. External verification confirms ReAct arXiv paper identifier `2210.03629`, i.e. 2022. Treat transcript’s “2023” reference as inaccurate for the paper/preprint date.
 
 ---
 
@@ -322,8 +330,8 @@ This note does not resolve that contradiction using external sources. Treat the 
 | Що показує raw function calling layer? | What LangChain hides: manual JSON schemas, raw SDK calls, message routing, and tool dispatch. |
 | Що показує raw ReAct layer? | How agent can work without function calling through prompt format, regex parsing, and scratchpad. |
 | Чому regex parsing fragile у raw ReAct? | Because it depends on LLM following exact text format. |
+| Яка corrected date для ReAct paper? | External verification confirms arXiv 2210.03629, i.e. 2022. |
 | Навіщо `stop=["\nObservation"]` у raw ReAct? | To stop model before it invents observation, so application can inject real tool result. |
-| Чому discount percentages non-obvious у прикладі? | So model cannot reliably guess and must use tools. |
 | Main production risk of tool-using agents? | Tool execution is a trust boundary and needs validation, authorization, tracing, and failure handling. |
 
 ---
@@ -381,7 +389,7 @@ Answer without looking:
 3. Що raw function calling implementation requires that LangChain hides?
 4. Чому raw ReAct needs regex?
 5. Що таке observation?
-6. Чому `stop=["\nObservation"]` important in raw ReAct?
+6. Яка corrected date для ReAct paper?
 7. Чому application, not model, should execute tools?
 8. Яка production issue може статися, якщо unknown product returns `0`?
 9. Чому source uses non-obvious discount percentages?
@@ -394,7 +402,7 @@ Expected answers:
 3. Manual JSON schemas, raw SDK calls, message dicts, direct tool dispatch.
 4. Because tool calls are emitted as raw text, not structured API fields.
 5. Tool execution result returned to LLM context.
-6. It prevents model from hallucinating tool result before app injects real observation.
+6. 2022 / arXiv 2210.03629.
 7. Because tools are real application actions and must be controlled, validated, and audited by application code.
 8. It may silently produce wrong business result instead of failing fast.
 9. To force tool usage instead of model guessing.
