@@ -20,8 +20,14 @@ review:
   - 2026-05-19
   - 2026-05-26
   - 2026-06-11
-source_type: transcript
+source_type: mixed
 source_confidence: medium
+verified_against_external_sources: 2026-05-16
+external_sources:
+  - arXiv 2201.11903: Chain-of-Thought Prompting Elicits Reasoning in Large Language Models
+  - arXiv 2210.03629: ReAct: Synergizing Reasoning and Acting in Language Models
+  - LangChain blog: Context Engineering for Agents
+  - Anthropic engineering article: Effective Context Engineering for AI Agents
 ---
 
 # Щоденна нотатка для повторення: Основи теорії Prompt Engineering
@@ -42,6 +48,14 @@ source_confidence: medium
 - Context engineering — еволюція prompt engineering: важливо не лише написати static prompt, а динамічно зібрати правильний context.
 - System prompt має бути не надто vague і не надто over-specific; потрібна “золота середина”.
 
+### External documentation verification
+
+External verification confirms:
+
+- Chain-of-Thought paper appeared as arXiv `2201.11903` in January 2022 and describes generating intermediate reasoning steps to improve complex reasoning.
+- ReAct paper appeared as arXiv `2210.03629` in October 2022 and describes interleaving reasoning traces with task-specific actions to interact with external sources/environments.
+- Context engineering is a current practice area discussed by LangChain and Anthropic, but exact best practices are vendor/model/application dependent and should be treated as version-sensitive.
+
 ### Додатковий backend / production context
 
 Для backend / AI Platform engineer prompt — це не просто текст. Це runtime contract між application і model.
@@ -58,8 +72,8 @@ Prompt впливає на:
 
 ### Припущення
 
-- Нотатка базується тільки на наданому transcript Section 11.
-- Зовнішні links у матеріалі не перевірялись окремо.
+- Основна нотатка базується на transcript Section 11.
+- External verification використано для підтвердження дат/назв CoT і ReAct papers та сучасної релевантності context engineering.
 - Історичні, фінансові й модельні claims із transcript не розширюються.
 
 ### Невідоме / не підтверджено джерелом
@@ -150,10 +164,14 @@ Source показує приклад з image description: коли model отр
 
 Chain-of-thought prompting спрямовує model розбити складну задачу на intermediate reasoning steps.
 
+External source correction: CoT paper is arXiv `2201.11903` from January 2022. It specifically studies few-shot demonstrations with chains of thought and reports improvements on arithmetic, commonsense and symbolic reasoning tasks.
+
 Source пояснює два варіанти:
 
 - zero-shot CoT: додати щось на кшталт “let’s think step by step”;
 - few-shot CoT: дати приклад подібної задачі з reasoning steps і answer.
+
+Version-sensitive / safety note: for production systems, exposing or requiring full chain-of-thought is not always appropriate. Prefer asking for concise rationale, structured explanation, or final answer with verifiable steps when needed.
 
 #### 3.6 ReAct prompting
 
@@ -164,6 +182,8 @@ Pattern:
 ```text
 Thought -> Action -> Observation -> Thought -> Action -> Observation -> Final Answer
 ```
+
+External source correction: ReAct paper is arXiv `2210.03629` from October 2022. It describes interleaving reasoning traces and task-specific actions, where actions let the model interact with external sources such as knowledge bases or environments.
 
 Source пояснює, що ReAct дозволяє model не лише міркувати, а й діяти через external sources/tools. Code/application бере action з model output, виконує його і повертає observation назад у prompt/context.
 
@@ -194,6 +214,8 @@ Source вказує типові problems:
 - context poisoning;
 - context confusion;
 - context clash.
+
+External verification: modern context-engineering materials from LangChain/Anthropic discuss similar concerns around selecting, compressing, isolating and maintaining context for agents. Exact terminology and recommended techniques evolve quickly.
 
 #### 3.9 System prompt engineering
 
@@ -253,6 +275,10 @@ Transcript highlights these production-relevant ideas:
 - context confusion happens when unnecessary context influences response;
 - context clash happens when context parts contradict each other;
 - system prompts evolve iteratively as models and agents evolve.
+
+### External documentation verification
+
+CoT and ReAct are real research-backed prompting/agent patterns, but not every production model or API should expose raw reasoning traces. Context engineering is actively evolving; treat vendor blog guidance as implementation guidance rather than stable theory.
 
 ### Додатковий backend / production context
 
@@ -399,8 +425,11 @@ A: Надання кількох прикладів, щоб model могла imi
 Q: Що таке one-shot prompting?
 A: Підтип few-shot prompting з рівно одним example.
 
-Q: Що таке chain-of-thought prompting?
-A: Prompting, який спрямовує model вирішувати complex tasks через intermediate reasoning steps.
+Q: Яка verified дата Chain-of-Thought paper?
+A: arXiv `2201.11903`, January 2022.
+
+Q: Яка verified дата ReAct paper?
+A: arXiv `2210.03629`, October 2022.
 
 Q: Що поєднує ReAct?
 A: Reasoning і acting: model reasons, chooses actions, observes results, and continues.
@@ -470,7 +499,7 @@ Answer without looking:
 4. Як few-shot prompting reduces model freedom?
 5. Що додає chain-of-thought?
 6. Що ReAct додає поверх reasoning?
-7. Чому context engineering більше, ніж prompt engineering?
+7. Які verified arXiv IDs для CoT і ReAct?
 8. Що таке context poisoning, confusion and clash?
 9. Чому too-specific system prompts can be bad?
 10. Чому too-vague system prompts can be bad?
@@ -483,7 +512,7 @@ Expected answers:
 4. It provides examples the model can imitate.
 5. Intermediate reasoning steps.
 6. Actions/tools and observations from external sources.
-7. Because real systems dynamically assemble context from many sources.
+7. CoT: `2201.11903`; ReAct: `2210.03629`.
 8. Poisoning = bad context contaminates future context; confusion = irrelevant context affects output; clash = contradictory context conflicts.
 9. They hardcode brittle logic and become maintenance nightmares.
 10. They provide insufficient signal and produce inconsistent behavior.
