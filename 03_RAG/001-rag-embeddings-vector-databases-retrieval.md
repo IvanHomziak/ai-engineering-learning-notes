@@ -21,8 +21,12 @@ review:
   - 2026-05-22
   - 2026-05-29
   - 2026-06-14
-source_type: transcript
+source_type: mixed
 source_confidence: medium
+verified_against_external_sources: 2026-05-16
+external_sources:
+  - arXiv 2005.11401: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks
+  - LangChain documentation: Tools / Retrieval overview pages reviewed indirectly for current terminology
 ---
 
 # Daily Review Note: RAG — Embeddings, Vector Databases and Retrieval
@@ -31,7 +35,7 @@ source_confidence: medium
 
 ### Source-based explanation
 
-Retrieval Augmented Generation, або RAG, — це техніка, яка дозволяє LLM відповідати на питання на основі великого або приватного набору documents, не вставляючи весь document у prompt.
+Retrieval-Augmented Generation, або RAG, — це техніка, яка дозволяє LLM відповідати на питання на основі великого або приватного набору documents, не вставляючи весь document у prompt.
 
 Проблема з джерела: є великий document, наприклад книга, фінансовий документ або інший приватний файл. User хоче поставити питання, відповідь на яке знаходиться в конкретному paragraph або small section. LLM не знає приватні дані, бо не була trained on them.
 
@@ -56,6 +60,10 @@ RAG solution:
 - **Augmentation** — додати ці chunks у prompt.
 - **Generation** — передати augmented prompt у LLM і згенерувати відповідь.
 
+### External documentation verification
+
+External verification corrected terminology: the canonical name in the original 2020 paper is **Retrieval-Augmented Generation**, not “Retrieval Augmentation Generation”. The original paper describes RAG as combining a pretrained parametric model with non-parametric memory accessed through retrieval.
+
 ### Additional backend / production context
 
 RAG — це не “LLM знає документ”. Це runtime architecture:
@@ -68,9 +76,9 @@ Document ingestion -> chunking -> embeddings -> vector database -> query embeddi
 
 ### Assumptions
 
-- Нотатка базується тільки на наданому transcript Section 9.
-- Зовнішні джерела, LangChain/Pinecone документація і research papers не перевірялись.
-- Твердження про long-context models, token limits, Pinecone, LangChain abstractions і embedding behavior беруться тільки з source.
+- Основна нотатка базується на transcript Section 9.
+- External verification використано тільки для уточнення canonical terminology і загального RAG framing.
+- Точні current APIs LangChain/Pinecone не додаються, бо вони не були частиною source transcript.
 
 ### Unknowns
 
@@ -197,8 +205,6 @@ Source описує RAG як pipeline, де document split into chunks, chunks e
 
 ### Additional backend / production context
 
-Backend analogy:
-
 | RAG concept | Backend / distributed systems analogy |
 |---|---|
 | Document loader | ingestion adapter / connector |
@@ -243,6 +249,10 @@ Source also highlights RAG drawbacks:
 - searching mechanism is required;
 - retrieved chunks may not be relevant enough;
 - sometimes additional context is needed.
+
+### External documentation verification
+
+The original RAG paper frames RAG around a pretrained seq2seq parametric memory plus non-parametric memory accessed by a neural retriever. This supports the note’s runtime retrieval framing, but the source transcript is more implementation-oriented and simplified.
 
 ### Additional backend / production context
 
@@ -303,7 +313,7 @@ RAG quality should be evaluated with known questions and expected source chunks:
 
 ### Potential issue
 
-Source sometimes says “Retrieval Augmentation Generation” / “retrieval augmentation generation”. The common expansion is often written as “Retrieval-Augmented Generation”, but this note does not correct the source beyond using the provided RAG meaning.
+Corrected: Source sometimes says “Retrieval Augmentation Generation” / “retrieval augmentation generation”. External sources use **Retrieval-Augmented Generation**. The note keeps the source’s conceptual split — Retrieval, Augmentation, Generation — but uses the corrected canonical name.
 
 ---
 
@@ -313,7 +323,7 @@ Source sometimes says “Retrieval Augmentation Generation” / “retrieval aug
 
 | Term | Meaning |
 |---|---|
-| RAG | Retrieval + Augmentation + Generation technique for answering with relevant external context |
+| RAG | Retrieval-Augmented Generation technique for answering with relevant external context |
 | Retrieval | Finding relevant chunks for user query |
 | Augmentation | Adding retrieved chunks into prompt/context |
 | Generation | LLM produces answer using augmented prompt |
@@ -376,7 +386,10 @@ Source sometimes says “Retrieval Augmentation Generation” / “retrieval aug
 Q: What problem does RAG solve?
 A: It helps LLM answer questions over large or private documents without putting the entire document into the prompt.
 
-Q: What are the three parts of RAG?
+Q: What is the canonical expansion of RAG?
+A: Retrieval-Augmented Generation.
+
+Q: What are the three operational parts of RAG?
 A: Retrieval, Augmentation and Generation.
 
 Q: Why is full-document prompting weak?
@@ -387,9 +400,6 @@ A: A smaller text segment created by splitting a larger document.
 
 Q: What is an embedding?
 A: A vector representation of text or another object.
-
-Q: What is a vector?
-A: A sequence/list of numbers.
 
 Q: What does a good embedding model do?
 A: It places semantically similar texts close together in vector space.
@@ -453,7 +463,7 @@ A: The system may retrieve irrelevant, stale, unauthorized or insufficient chunk
 
 Answer without looking:
 
-1. What does RAG stand for in the source explanation?
+1. What is the canonical expansion of RAG?
 2. Why does full-document prompt stuffing not scale?
 3. What is the role of chunking?
 4. What is an embedding model?
@@ -466,7 +476,7 @@ Answer without looking:
 
 Expected answers:
 
-1. Retrieval, Augmentation, Generation.
+1. Retrieval-Augmented Generation.
 2. Token limits, needle-in-the-haystack, cost and latency.
 3. Split large documents into smaller searchable pieces.
 4. A model that converts text/object into vector representation.
