@@ -1,0 +1,11 @@
+Question,Answer,Tags
+"Яку проблему вирішує RAG?","RAG допомагає LLM відповідати на питання по великих або приватних документах без вставлення всього документа в prompt.","rag;retrieval;llm"
+"Які три частини RAG?","Retrieval, Augmentation і Generation.","rag;basics"
+"Чому full-document prompting слабкий?","Він впирається в token limits, збільшує cost/latency і може робити LLM менш ефективною на long context.","rag;token-limit;latency;cost"
+"Що таке chunk?","Менший text segment, створений через splitting large document.","chunking;text-splitting"
+"Що таке embedding?","Vector representation text або іншого object.","embeddings;vectors"
+"Що таке vector?","Sequence/list of numbers.","vectors;embeddings"
+"Що робить good embedding model?","Розміщує semantically similar texts close together у vector space.","embeddings;semantic-search"
+"Що робить vector database?","Зберігає vectors і знаходить closest vectors до query vector.","vector-database;retrieval"
+"Що таке prompt augmentation у RAG?","Додавання retrieved relevant chunks у prompt як context.","prompt-augmentation;rag"
+"Який main production risk in retrieval?","System може retrieve irrelevant, stale, unauthorized або insufficient chunks.","rag;production;failure-modes"
