@@ -32,9 +32,9 @@ source_confidence: medium
 
 Model Context Protocol, або MCP, у цьому матеріалі пояснюється як стандартний протокол для підключення AI-додатків до зовнішніх інструментів, ресурсів і шаблонів prompts.
 
-Проблема, яку описує source: якщо agent має надсилати повідомлення у Slack, читати або надсилати emails через Gmail, або робити database queries, developer зазвичай пише custom tools під конкретний AI-додаток. Якщо цю саму функціональність треба використати в іншому додатку, інтеграцію доведеться писати повторно.
+Проблема з джерела: якщо agent має надсилати повідомлення у Slack, працювати з Gmail або робити database queries, developer зазвичай пише custom tools під конкретний AI-додаток. Якщо потім таку саму можливість треба використати в Cursor, Windsurf, Cloud Desktop, GitHub Copilot або іншому assistant, інтеграцію доведеться писати повторно.
 
-MCP додає abstraction layer:
+MCP вводить abstraction layer:
 
 ```text
 AI application / MCP host
@@ -48,7 +48,7 @@ AI application / MCP host
 
 ### Додатковий backend / production context
 
-MCP варто сприймати як integration protocol для AI applications, а не як можливість самої LLM. LLM генерує tool call, але реальна інтеграція з зовнішньою системою виконується поза model.
+MCP варто сприймати як integration protocol для AI applications, а не як можливість самої LLM. LLM може згенерувати tool call, але реальна інтеграція з зовнішньою системою виконується поза model.
 
 Backend mental model:
 
@@ -57,7 +57,7 @@ Agent orchestration залишається в host/application.
 Tool execution переноситься за boundary MCP server.
 ```
 
-Тобто host відповідає за orchestration, а MCP server — за виконання конкретних tools/resources/prompts.
+Тобто host відповідає за orchestration, а MCP server — за виконання конкретних tools, доступ до resources або надання prompts.
 
 ### Припущення
 
@@ -78,13 +78,13 @@ Tool execution переноситься за boundary MCP server.
 
 ### Пояснення на основі джерела
 
-Без MCP developer може опинитися в ситуації, де одну й ту саму інтеграцію треба писати окремо для Cursor, Windsurf, Cloud Desktop, GitHub Copilot або власного agent.
+Без MCP одну й ту саму інтеграцію довелося б писати окремо для різних AI-додатків. Source описує приклад: functionality, написана під Cursor, не буде автоматично доступна для Windsurf, Cloud Desktop, GitHub Copilot або іншого agent без додаткової інтеграції.
 
-MCP вирішує це через підхід:
+З MCP підхід змінюється:
 
 ```text
-один MCP server exposing capability
--> багато MCP-compatible hosts можуть підключитися до нього
+один MCP server expose capability
+-> багато MCP-compatible hosts можуть підключитися
 ```
 
 Source порівнює MCP з USB-C: якщо AI application підтримує protocol, MCP server можна підключити як reusable capability.
@@ -93,7 +93,7 @@ MCP також змінює місце виконання tools. У vanilla Lang
 
 ### Додатковий backend / production context
 
-Для AI Platform Engineering це важливо через розділення відповідальностей:
+Для AI Platform Engineering це важливо через чітке розділення відповідальностей:
 
 - host/application обробляє user interaction і orchestration;
 - MCP client відповідає за protocol communication;
@@ -110,7 +110,7 @@ MCP також змінює місце виконання tools. У vanilla Lang
 
 #### 3.1 LLM не виконує tools напряму
 
-Source нагадує: LLM — це token generator. LLM може згенерувати текст або structured tool call, але не виконує реальні дії сама.
+Source нагадує: LLM — це token generator. LLM може згенерувати text або structured tool call, але не виконує реальні дії сама.
 
 Web search, database query, Gmail call або Python function — це external code, який написали software engineers і підключили в application layer.
 
@@ -126,7 +126,7 @@ user query
 -> LLM генерує final answer або наступний tool call
 ```
 
-Source підкреслює: tool calling не працює зі 100% гарантією, бо LLM є statistical token predictor, але зазвичай працює достатньо добре для agentic applications.
+Source підкреслює: tool calling не працює зі 100% гарантією, бо LLM є statistical token predictor, але часто працює достатньо добре для agentic applications.
 
 #### 3.2 Навіщо потрібен MCP
 
@@ -138,10 +138,10 @@ Source підкреслює: tool calling не працює зі 100% гаран
 |---|---|
 | MCP host | AI application, який підтримує MCP: IDE, desktop assistant або custom agent |
 | MCP client | Component всередині host, який говорить з одним MCP server |
-| MCP server | Server/wrapper/interface, який exposes tools, resources and prompts |
+| MCP server | Server/wrapper/interface, який expose tools, resources and prompts |
 | Tools | Model-controlled functions, які AI може invoke |
-| Resources | Application-controlled data, exposed to AI system |
-| Prompts | User-controlled templates for common interactions |
+| Resources | Application-controlled data, які відкриваються для AI system |
+| Prompts | User-controlled templates для common interactions |
 | Protocol | Standard language/methods між MCP client і MCP server |
 
 #### 3.4 Відношення client/server
@@ -162,9 +162,9 @@ MCP host
 1. MCP host стартує.
 2. MCP client ініціалізує connection до MCP server.
 3. MCP server підтверджує client.
-4. MCP server exposes available capabilities.
+4. MCP server expose available capabilities.
 5. Client отримує список available tools/resources/prompts.
-6. Application пізніше може augment user queries цими available tools.
+6. Application пізніше може augment user query цими available tools.
 
 Source описує це як процес, що відбувається до user interaction.
 
