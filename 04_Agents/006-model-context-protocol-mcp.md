@@ -48,7 +48,7 @@ AI application / MCP host
 
 ### Додатковий backend / production context
 
-MCP у цій лекції варто сприймати не як model feature, а як **integration protocol для AI applications**. Це схоже на adapter/gateway layer між agent orchestration і реальним виконанням tools.
+MCP у цій лекції варто сприймати не як можливість самої LLM, а як **інтеграційний протокол для AI applications**. Це схоже на adapter/gateway layer між agent orchestration і реальним виконанням tools.
 
 ```text
 Agent orchestration stays in host/application.
@@ -65,10 +65,10 @@ Tool execution moves behind MCP server boundary.
 
 ### Невідомо / не підтверджено джерелом
 
-- Unknown / Not confirmed from source: current official MCP specification details.
-- Unknown / Not confirmed from source: exact transport semantics for stdio, SSE, SSH, Docker or remote deployment.
-- Unknown / Not confirmed from source: exact support status in ChatGPT, Cursor, Windsurf, Cloud Desktop, GitHub Copilot or other products.
-- Unknown / Not confirmed from source: exact method names and schemas for `list_prompts`, `get_prompt`, `list_tools`, `call_tool`, `list_resource_templates`, `progress_notification`.
+- Unknown / Not confirmed from source: актуальні деталі офіційної MCP specification.
+- Unknown / Not confirmed from source: точна поведінка transport mechanisms: stdio, SSE, SSH, Docker або remote deployment.
+- Unknown / Not confirmed from source: актуальний support status у ChatGPT, Cursor, Windsurf, Cloud Desktop, GitHub Copilot або інших products.
+- Unknown / Not confirmed from source: точні method names і schemas для `list_prompts`, `get_prompt`, `list_tools`, `call_tool`, `list_resource_templates`, `progress_notification`.
 
 ---
 
