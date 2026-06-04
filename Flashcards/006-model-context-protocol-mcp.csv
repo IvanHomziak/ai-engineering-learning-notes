@@ -1,0 +1,13 @@
+Question,Answer,Tags
+"What problem does MCP solve?","It avoids rewriting the same tool/resource/prompt integrations separately for every AI application by exposing them through a standard MCP server.","mcp;agents;tooling"
+"Does an LLM execute tools directly?","No. The LLM outputs a tool call; application/server code executes the actual tool.","llm;tool-calling;agents"
+"What is an MCP host?","An AI application that supports MCP and can be augmented with external tools, resources or prompts.","mcp-host;mcp"
+"What is an MCP client?","The component inside the host that communicates with an MCP server.","mcp-client;mcp"
+"What is an MCP server?","A standardized wrapper/interface that exposes tools, resources and prompts to MCP-compatible hosts.","mcp-server;mcp"
+"What are the three primary interfaces exposed by MCP servers?","Tools, resources and prompts.","mcp-server;tools;resources;prompts"
+"Where does tool execution happen in the MCP flow described in the source?","In the MCP server runtime, not inside the host application.","mcp;tool-execution;architecture"
+"What is the source's client/server cardinality claim?","One MCP client connects to one MCP server; multiple servers require multiple clients inside the host.","mcp-client;mcp-server;architecture"
+"Why is MCP compared to USB-C?","Because a compatible server can plug into different AI applications that support the protocol.","mcp;interoperability"
+"What is a major security risk with community MCP servers?","Supply-chain risk from malicious or fake servers that can steal data or run harmful code.","mcp;security;supply-chain"
+"What is sampling in the source?","A capability where the MCP server requests the host AI system to generate a completion for a prompt.","mcp;sampling;security"
+"What is the main architectural benefit of MCP?","It decouples agent orchestration from reusable tool/resource/prompt execution services.","mcp;architecture;ai-platform"
