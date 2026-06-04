@@ -32,7 +32,7 @@ source_confidence: medium
 
 Model Context Protocol, або MCP, у цьому матеріалі пояснюється як стандартний шар інтеграції для того, як AI-додатки отримують контекст, інструменти, ресурси й prompts від зовнішніх систем.
 
-Основна проблема: якщо agent має вміти працювати зі Slack, Gmail, database queries або іншими external systems, developer зазвичай пише custom tools під конкретний AI-додаток. Якщо потім цю саму функціональність треба використати в Cursor, Windsurf, Cloud Desktop, GitHub Copilot або іншому assistant, доведеться писати окремі інтеграції повторно.
+Проблема: якщо agent має працювати зі Slack, Gmail, database queries або іншими external systems, developer зазвичай пише custom tools під конкретний AI-додаток. Якщо потім таку саму функціональність треба використати в Cursor, Windsurf, Cloud Desktop, GitHub Copilot або іншому assistant, доведеться повторно писати інтеграції.
 
 MCP додає abstraction layer:
 
@@ -48,9 +48,7 @@ AI application / MCP host
 
 ### Додатковий backend / production context
 
-MCP у цій лекції треба сприймати не як model feature, а як **integration protocol для AI applications**. Це схоже на adapter/gateway layer між agent orchestration і реальним виконанням tools.
-
-Backend mental model:
+MCP у цій лекції варто сприймати не як model feature, а як **integration protocol для AI applications**. Це схоже на adapter/gateway layer між agent orchestration і реальним виконанням tools.
 
 ```text
 Agent orchestration stays in host/application.
@@ -63,7 +61,7 @@ Tool execution moves behind MCP server boundary.
 
 - Нотатка побудована тільки на наданому transcript Section 17.
 - External MCP documentation не перевірялась у цій нотатці.
-- Усі claims про popularity, vendor support, future registry/discovery/OAuth або ChatGPT support трактуються як source claims і version-sensitive.
+- Усі твердження про популярність MCP, підтримку vendors, майбутні registry/discovery/OAuth або ChatGPT support трактуються як source claims і version-sensitive.
 
 ### Невідомо / не підтверджено джерелом
 
@@ -97,7 +95,7 @@ One MCP server exposing capability
 Many MCP-compatible hosts can connect to it
 ```
 
-Source використовує аналогію з USB-C: MCP server схожий на зовнішній пристрій, який можна підключити до різних AI applications, якщо вони підтримують protocol.
+У source використовується аналогія з USB-C: MCP server схожий на зовнішній пристрій, який можна підключити до різних AI applications, якщо вони підтримують protocol.
 
 MCP також змінює місце виконання tools. У vanilla LangChain-style agent tools зазвичай виконуються всередині application/agent runtime. У MCP tool call надсилається до MCP server, і саме server виконує tool.
 
@@ -151,11 +149,9 @@ Source підкреслює: tool calling не працює 100%, бо LLM є st
 
 #### 3.3 Архітектурні компоненти MCP
 
-Source виділяє такі компоненти:
-
 | Компонент | Значення на основі джерела |
 |---|---|
-| MCP host | AI application, який підтримує MCP, наприклад IDE, assistant або specialized agent |
+| MCP host | AI application, який підтримує MCP: IDE, assistant або specialized agent |
 | MCP client | Component всередині host, який говорить з одним MCP server |
 | MCP server | Server/wrapper/interface, який exposes tools, resources and prompts |
 | Tools | Model-controlled functions, які AI може invoke |
@@ -181,7 +177,7 @@ MCP host
 1. MCP host стартує.
 2. MCP client ініціалізує connection до MCP server.
 3. MCP server підтверджує client.
-4. MCP server expose available capabilities.
+4. MCP server exposes available capabilities.
 5. Client отримує список available tools/resources/prompts.
 6. Application пізніше може augment user queries цими available tools.
 
@@ -212,22 +208,22 @@ MCP servers expose три primary interfaces:
 
 #### 3.8 Варіанти реалізації MCP server
 
-Source lists these options:
+Source називає такі варіанти:
 
-- manually create MCP server in Python або Node.js;
-- use AI tools/generators to create MCP servers;
-- use community-built open-source MCP servers;
-- use official MCP servers/integrations maintained by companies.
+- вручну створити MCP server у Python або Node.js;
+- використати AI tools/generators для створення MCP servers;
+- використати community-built open-source MCP servers;
+- використати official MCP servers/integrations, які підтримують companies.
 
-Source advice: do not reinvent the wheel. Before building a third-party integration MCP server, check whether the vendor already provides one.
+Source advice: не reinvent the wheel. Перед створенням third-party integration MCP server треба перевірити, чи vendor уже надає готовий server.
 
 #### 3.9 Як можуть запускатися MCP servers
 
 Source says MCP servers can run:
 
-- locally via standard input/output channel;
+- локально через standard input/output channel;
 - remotely via server-sent events або SSH;
-- as Docker containers.
+- як Docker containers.
 
 Exact implementation details are not provided in the transcript.
 
