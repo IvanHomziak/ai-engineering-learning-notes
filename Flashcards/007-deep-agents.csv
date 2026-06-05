@@ -1,0 +1,11 @@
+Question,Answer,Tags
+"Чим deep agent відрізняється від shallow ReAct agent?","Deep agent має механізми для long-horizon tasks: planning, subagents, context isolation, filesystem і detailed system prompt. Shallow agent здебільшого виконує простий tool-calling loop.","deep-agents;react;agents"
+"Навіщо deep agent потрібен planning tool?","Щоб явно розбити complex task на steps, tracking progress і адаптувати план під час execution.","deep-agents;planning"
+"Яка головна користь subagents?","Вони виконують focused work в isolated context і повертають main agent компактний результат замість усіх проміжних outputs.","deep-agents;subagents;context"
+"Чому context bloat небезпечний?","Він збільшує cost і latency, а також може спричинити context pollution, contradiction і degradation якості рішень.","context-engineering;cost;latency"
+"Для чого deep agents використовують filesystem?","Щоб зберігати large outputs, notes, artifacts і intermediate results поза active context window та вибірково читати потрібне.","deep-agents;filesystem;context"
+"Що таке context isolation?","Це виконання subtask в окремому context window, щоб не забруднювати main conversation.","subagents;context-isolation"
+"Який corrected claim важливий щодо Claude Code subagents?","Не можна узагальнювати, що subagents можуть spawn nested subagents; Anthropic docs зазначають, що subagents cannot spawn other subagents.","claude-code;subagents;verification"
+"Коли subagent може бути поганим вибором?","Коли задача потребує frequent back-and-forth, shared context або quick targeted change.","subagents;tradeoffs"
+"Який production ризик має filesystem у deep agents?","Надто широкі read/write permissions можуть призвести до витоку secrets або небезпечних file modifications.","security;filesystem;deep-agents"
+"Що означає offloading у Deep Agents?","Великі inputs або tool results переносяться у filesystem/backend, а в active context залишається reference або preview.","context-engineering;offloading"
