@@ -1,0 +1,11 @@
+Question,Answer,Tags
+"Що таке agent skill?","Це reusable directory з `SKILL.md` і optional supporting files, яка дає agent domain knowledge, workflows або best practices.","deep-agents;agent-skills"
+"Навіщо потрібне progressive disclosure?","Щоб не завантажувати всі skill instructions у system prompt, а читати full content тільки коли skill релевантна задачі.","progressive-disclosure;context-engineering"
+"Які три стадії progressive disclosure у Deep Agents?","Discovery, Read, Execute.","deep-agents;skills"
+"Що agent бачить на discovery stage?","Skill metadata: name, description і path/location, але не весь content skill.","skills;metadata"
+"Чому `description` у `SKILL.md` критично важливий?","Agent використовує description, щоб вирішити, чи skill підходить до user task.","skill-md;metadata"
+"Яку роль виконує `SkillsMiddleware`?","Він loads skills metadata from sources і injects skills section into system prompt.","skillsmiddleware;langchain"
+"Що підтверджує `skills.py` про source override?","Sources loaded in order, and later sources override earlier same-name skills.","skills.py;override"
+"Що було corrected у transcript?","Термін “dynamic disclosure” замінено на official term “progressive disclosure”.","verification;progressive-disclosure"
+"Для чого Remotion skill у прикладі?","Щоб дати agent best practices для створення Remotion video/GIF з React/code.","remotion;agent-skills"
+"Який production risk має writable shared skill library?","Agent або malicious input може змінити shared instructions і вплинути на інших users/agents.","security;skills"
