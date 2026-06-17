@@ -1,0 +1,11 @@
+Question,Answer,Tags
+"Що повертає LangChain chat model після `invoke()`?","Зазвичай `AIMessage`, а не raw string.","langchain;chat-models"
+"Чим `Message` відрізняється від `Document`?","`Message` використовується для chat/model I/O, а `Document` — для retrieval/RAG workflows.","langchain;messages;document"
+"Навіщо потрібен `ToolMessage`?","Щоб передати model результат виконання tool і повʼязати його з original tool call через `tool_call_id`.","langchain;tool-calling"
+"Що робить `bind_tools()`?","Робить tools доступними model, щоб вона могла повернути tool calls.","langchain;bind-tools"
+"Що робить `with_structured_output()`?","Налаштовує model на response у визначеній schema: Pydantic, `TypedDict` або JSON Schema.","langchain;structured-output"
+"Як працює `RecursiveCharacterTextSplitter`?","Він пробує split text за separators in order, починаючи з більших semantic units, поки chunks не стануть достатньо малими.","langchain;text-splitter;rag"
+"Чому token limit не можна вирішувати тільки збільшенням context window?","Великий context збільшує cost, latency і ризик context pollution.","context-engineering;tokens"
+"Що таке co-reference resolution у memory context?","Здатність зрозуміти, що “him”, “that” або “same” посилаються на попередні entities у conversation history.","memory;coreference"
+"Для чого потрібен checkpointer?","Щоб persist graph/agent state як checkpoints і відновлювати conversation/workflow state через `thread_id`.","langgraph;checkpointer;memory"
+"Чому `load_summarize_chain`/`map_reduce` треба сприймати обережно?","Це корисне course framing, але current LangChain memory docs акцентують middleware, trimming, summarization і LangGraph checkpointers.","langchain;memory;legacy"
