@@ -1,0 +1,11 @@
+Question,Answer,Tags
+"Що відрізняє production-grade agent від demo agent?","Production agent має observability, gateway/control layer, evals, feedback loop, memory governance, security controls і cost/reliability limits.","production-agents;llmops"
+"Навіщо agent observability відрізняється від звичайної product observability?","Треба бачити не тільки clicks/API metrics, а й natural language intent, LLM calls, tool calls, memory, retrieval і intermediate decisions.","observability;agents"
+"Яку роль виконує AI gateway?","Це control layer для model traffic: routing, logging, rate limiting, retries, fallback, cost visibility і sometimes guardrails.","ai-gateway;llmops"
+"Чому user trust не дорівнює technical reliability?","User має розуміти, чому agent діє певним чином, які дані використовує, і мати спосіб дати feedback.","trust;agents"
+"Що таке lean feedback loop з transcript?","User дає natural language feedback, agent оновлює Markdown file, а цей file додається в future context.","feedback-loops;agents"
+"Що таке prompt injection?","Input, який змінює behavior/output LLM у небажаний спосіб.","security;prompt-injection"
+"Чим indirect prompt injection небезпечна для agents?","Malicious instructions можуть бути в external files/webpages/retrieved content і вплинути на tool execution.","security;indirect-prompt-injection"
+"Що таке blast radius для LLM agent?","Максимальна шкода, яку attacker може зробити через доступні agent tools, data і permissions.","security;blast-radius"
+"Чому RAG не вирішує prompt injection повністю?","OWASP прямо зазначає, що RAG і fine-tuning не fully mitigate prompt injection vulnerabilities.","rag;security;owasp"
+"Які controls потрібні для high-risk tools?","Least privilege, human approval, audit logs, sandboxing, output validation і adversarial testing.","security;guardrails;hitl"
