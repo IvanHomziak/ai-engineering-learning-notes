@@ -15,7 +15,7 @@ For lecture-generation tasks, always read:
 
 - `prompts/master-learning-prompt.md`;
 - the relevant skill under `.agents/skills/`;
-- the relevant approved manifest under `_manifests/`;
+- the relevant manifest under `_manifests/`;
 - only the source files assigned to the current lecture.
 
 Do not duplicate the complete master prompt inside generated notes.
@@ -47,16 +47,19 @@ Replace sensitive values with safe placeholders such as `<API_KEY>`, `<EMAIL>`,
 
 ## Workflow rules
 
-For a new course section:
+For a new course section started with `$start-learning-section`:
 
 1. Analyze the complete source bundle.
-2. Create a section manifest.
-3. Create a coverage matrix.
-4. Stop before generating lectures.
-5. Wait until the manifest is explicitly approved.
-6. Generate exactly one lecture per task.
-7. Never generate the next lecture in the same task.
-8. Update the section index only after a lecture is approved.
+2. Create a section manifest and coverage matrix.
+3. Validate the manifest and source assignments.
+4. Continue through all valid lecture entries in manifest order.
+5. Generate one lecture at a time and validate it before starting the next.
+6. Resume from the first incomplete lecture when the same command is run again.
+7. Stop on a blocking validation or file-safety issue.
+8. Create a section-level generation report after the final lecture.
+9. Do not publish drafts automatically.
+
+The standalone planning and single-lecture skills keep their narrower scopes.
 
 ## Content rules
 
@@ -83,13 +86,14 @@ For a new course section:
 ## File safety
 
 - Do not overwrite an existing approved or published lecture.
-- Do not silently modify an approved manifest.
 - Do not delete source materials.
 - Write draft lectures only under `_artifacts/drafts/`.
 - Store section manifests under `_manifests/`.
+- Store section reports under `_artifacts/section-reports/`.
 - Published lectures belong in the relevant numbered learning directory.
 - Use relative Obsidian links.
 - Never commit secrets.
+- Do not change lecture boundaries or source assignments after manifest validation.
 
 ## Completion rules
 
