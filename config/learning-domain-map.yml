@@ -1,0 +1,26 @@
+version: 1
+
+publish_layout: "<target_root_directory>/<section_id>/<lecture_id>-<slug>.md"
+create_missing_directories: true
+create_section_index: true
+
+mappings:
+  langchain: 01_LangChain
+  python: 02_Python
+  rag: 03_RAG
+  agents: 04_Agents
+  langgraph: 04_Agents
+  llm-gateway: 05_LLM_Gateway
+  spring-ai: 06_Spring_AI
+  ai-platform: 07_AI_Platform
+  production-llm: 08_Production_LLM
+  llm-observability: 08_Production_LLM
+  llm-security: 08_Production_LLM
+  interview: 09_Interview_Preparation
+  interview-preparation: 09_Interview_Preparation
+
+fallback:
+  strategy: next_available_numbered_root_directory
+  prefix_width: 2
+  separator: "_"
+  update_this_file_after_creation: true
