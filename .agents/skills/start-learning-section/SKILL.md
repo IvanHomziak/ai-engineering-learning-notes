@@ -1,6 +1,6 @@
 ---
 name: start-learning-section
-description: Start or resume processing a complete course section. Create and validate its manifest when needed, then generate the remaining lectures one by one in manifest order and preserve progress for later runs.
+description: Start or resume processing a complete course section. Create and validate its manifest, generate lectures sequentially, independently review and repair them, then publish quality-approved lectures into mapped numbered learning directories.
 ---
 
 # Start Learning Section
@@ -12,66 +12,148 @@ $start-learning-section
 _sources/inbox/<section-id>
 ```
 
-## Required instructions
+## Required reading
 
 Before acting, read:
 
 - root `AGENTS.md`;
+- `prompts/lecture-depth-contract.md`;
 - `.agents/skills/plan-course-section/SKILL.md`;
 - `.agents/skills/generate-learning-lecture/SKILL.md`;
+- `.agents/skills/review-learning-lecture/SKILL.md`;
+- `.agents/skills/publish-learning-lecture/SKILL.md`;
+- `config/learning-domain-map.yml`;
 - source-bundle `context.md` when present.
 
-Use repository-relative paths. The source bundle must be inside the opened
-repository. Do not modify source materials.
+Use repository-relative paths. Do not modify source materials.
 
 ## Workflow
 
-1. Validate the source directory and ignore dependency or build directories.
-2. Resolve `section_id`, domain, manifest path, and section-report path.
+1. Validate the source bundle.
+2. Resolve section ID, domain, manifest path, target root directory, and section
+   report path.
 3. Load the matching manifest, or call `plan-course-section` to create it.
-4. Require manifest `validation_status: VALID`; otherwise report the blocking
-   issues and stop.
+4. Require `validation_status: VALID`.
 5. Change valid `PLANNED` lectures to `READY_FOR_GENERATION`.
-6. In manifest order, select the first incomplete lecture whose prerequisites
-   are satisfied.
-7. Set it to `GENERATION_IN_PROGRESS` and call
-   `generate-learning-lecture` for that lecture ID.
-8. Continue only when the lecture returns `DRAFT_GENERATED` and all required
-   files exist and are non-empty.
-9. Repeat steps 6–8 until no ready lecture remains.
-10. Finalize the section report and set `section_status: DRAFTS_GENERATED` when
-    every lecture is `DRAFT_GENERATED` or `SKIPPED`.
+6. Process the first incomplete lecture in manifest order.
+7. Generate, review, repair when necessary, publish, then continue to the next
+   lecture.
+8. Finish only when every non-skipped lecture is `PUBLISHED`.
 
-## Resume behavior
+## Lecture state machine
 
-Do not rewrite valid completed drafts. For `GENERATION_IN_PROGRESS`, inspect the
-existing output and either finish it safely or mark the section blocked. Running
-the same command again must continue from the first incomplete lecture.
+```text
+PLANNED
+-> READY_FOR_GENERATION
+-> GENERATION_IN_PROGRESS
+-> DRAFT_GENERATED
+-> QUALITY_REVIEW_IN_PROGRESS
+-> QUALITY_PASSED
+-> PUBLISHED
+```
 
-## Required lecture output
+Failure paths:
+
+```text
+QUALITY_FAILED -> REPAIR -> QUALITY_REVIEW_IN_PROGRESS
+GENERATION_FAILED -> SECTION_GENERATION_BLOCKED
+```
+
+## Generation and review loop
+
+For each lecture:
+
+1. Verify prerequisites are `PUBLISHED` or otherwise satisfied by the manifest.
+2. Call `generate-learning-lecture` in `GENERATE` mode.
+3. Set `QUALITY_REVIEW_IN_PROGRESS`.
+4. Call `review-learning-lecture`.
+5. When review returns `QUALITY_PASSED`, call `publish-learning-lecture`.
+6. When review returns `QUALITY_FAILED`, increment `repair_attempts` and call
+   `generate-learning-lecture` in `REPAIR` mode with `quality-review.md`.
+7. Review the repaired lecture again.
+8. Allow at most two repair attempts.
+9. After two failed repairs, set lecture status `QUALITY_FAILED`, set section
+   status `SECTION_GENERATION_BLOCKED`, record exact reasons, and stop.
+
+Do not let the generator approve its own lecture. The independent review result
+is authoritative for publication.
+
+## Quality gate
+
+A lecture may continue only when:
+
+- total quality score is at least 85/100;
+- every critical category meets its minimum threshold;
+- no critical factual, security, source-coverage, or code defect remains;
+- `quality-review.md` explicitly states `QUALITY_PASSED`.
+
+A file that merely contains all expected headings is not complete.
+
+## Publication
+
+After `QUALITY_PASSED`:
+
+1. Resolve the target root directory from the manifest or domain map.
+2. Create the section subdirectory through its files when it is missing.
+3. Publish the approved lecture to:
+
+```text
+<target-root-directory>/<section-id>/<lecture-id>-<slug>.md
+```
+
+4. Create or update the section `index.md`.
+5. Record `published_path` and set lecture status `PUBLISHED`.
+
+Do not remove the draft package after publication.
+
+## Required draft package
 
 ```text
 _artifacts/drafts/<lecture-id>/
 ├── lecture.md
 ├── recall-sheet.md
 ├── quiz.md
-└── generation-report.md
+├── generation-report.md
+└── quality-review.md
 ```
 
-Maintain progress in:
+## Section report
+
+Maintain:
 
 ```text
 _artifacts/section-reports/<section-id>-generation-report.md
 ```
 
-## Stop conditions
+After each state change record:
 
-Stop and report the exact reason when the source bundle or manifest is invalid,
-a source file or prerequisite is missing, an existing protected artifact would
-be overwritten, sensitive data cannot be handled safely, or lecture validation
-fails.
+- lecture ID and current status;
+- quality score and repair count;
+- generated and published paths;
+- blocking defects;
+- source and verification warnings;
+- code execution result.
 
-Do not run lectures in parallel. Do not publish drafts.
+## Resume behavior
 
-If execution ends because of tool or context limits, preserve current statuses
-and report `SECTION_GENERATION_PARTIAL`; the next invocation resumes the work.
+On rerun:
+
+- do not regenerate `PUBLISHED` lectures;
+- validate and reuse `QUALITY_PASSED` drafts that have not yet been published;
+- continue repair for `QUALITY_FAILED` when attempts remain;
+- inspect `GENERATION_IN_PROGRESS` output before resuming;
+- continue from the first incomplete lecture.
+
+## Completion
+
+When every non-skipped lecture is `PUBLISHED`:
+
+1. set `section_status: PUBLISHED`;
+2. verify every published path and section index;
+3. recheck source coverage;
+4. finalize the section report;
+5. inspect the Git diff;
+6. stop.
+
+If tool or context limits interrupt execution, preserve states and report
+`SECTION_GENERATION_PARTIAL`. The same command must resume the workflow.
