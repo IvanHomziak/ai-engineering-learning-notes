@@ -1,117 +1,127 @@
 ---
 name: generate-learning-lecture
-description: Generate exactly one detailed production-oriented technical lecture from a validated course-section manifest, assigned transcript fragments, relevant code, tests, configurations, and verified external sources. Use for one specific lecture ID. Return the validated result to the calling workflow.
+description: Generate or repair exactly one detailed, self-contained production-oriented lecture from a validated section manifest and assigned sources. Apply the lecture depth contract and return the draft for independent review.
 ---
 
 # Generate Learning Lecture
 
 ## Purpose
 
-Generate exactly one technical learning lecture.
+Generate or repair exactly one technical lecture.
 
-This skill always processes one lecture ID. When called by
-`start-learning-section`, it returns control after validation so the
-orchestrator can continue with the next lecture.
-
-## Required inputs
-
-The caller must provide:
-
-- lecture ID;
-- validated manifest path.
-
-Optional inputs:
-
-- questions requiring special attention;
-- personal learning objective;
-- requested output path override.
+This skill does not grant final quality approval. It produces a draft that must
+be evaluated by `review-learning-lecture`.
 
 ## Required reading
 
-Before generating the lecture:
+Before working:
 
 1. Read the root `AGENTS.md`.
 2. Read `prompts/master-learning-prompt.md`.
-3. Read the specified manifest.
-4. Locate the requested lecture entry.
-5. Read only transcript sources assigned to that lecture.
-6. Read only code, tests, and configuration assigned to that lecture.
-7. Read short prerequisite summaries only when necessary.
+3. Read `prompts/lecture-depth-contract.md`.
+4. Read the validated section manifest.
+5. Locate the requested lecture entry.
+6. Read only sources assigned to that lecture.
+7. Read prerequisite summaries when necessary.
+8. In repair mode, read `quality-review.md` and address every required fix.
+
+## Required inputs
+
+- lecture ID;
+- validated manifest path;
+- mode: `GENERATE` or `REPAIR`;
+- in repair mode, the path to the failed quality review.
 
 ## Preconditions
 
-Stop with a clear error if:
+Stop when:
 
-- the manifest does not exist;
-- manifest `validation_status` is not `VALID`;
+- the manifest does not exist or is not `VALID`;
 - the lecture ID is absent;
-- the lecture status is not `READY_FOR_GENERATION` or `GENERATION_IN_PROGRESS`;
 - assigned source files do not exist;
-- a prerequisite is incomplete;
-- the target directory contains an approved or published artifact;
-- an existing complete draft would be overwritten.
+- prerequisites are incomplete;
+- the target contains protected approved or published content;
+- repair would ignore a blocking review defect.
 
-When a complete draft already exists and passes validation, return it as an
-existing successful result instead of rewriting it.
+A complete existing draft may be reused only when it has a current
+`quality-review.md` with `QUALITY_PASSED`.
 
-## Source analysis
+## 1. Build the content plan
 
-Before writing:
+Before drafting, create an internal content plan from the manifest entry:
 
-1. Check whether the assigned source material matches the lecture title.
-2. Identify unrelated material.
-3. Identify sensitive values and replace them with placeholders.
-4. Identify factual and version-sensitive claims.
-5. Distinguish lecturer statements, verified facts, assumptions, corrections,
-   and additional explanatory material.
-6. Determine whether supplied code actually demonstrates the lecture topic.
+- central topic;
+- primary concepts;
+- secondary and deferred concepts;
+- required source ranges;
+- concept coverage contract;
+- required code walkthrough;
+- required production concerns;
+- version-sensitive claims requiring verification.
 
-## External verification
+If the assigned scope violates the atomic scope rules, do not hide the problem
+with a shallow overview. Return a blocking manifest issue.
 
-For version-sensitive technical claims:
+## 2. Source analysis
 
-- use current official documentation when internet access is available;
-- prefer specifications, official documentation, official repositories, and
-  official release notes;
+Determine:
+
+- which lecturer claims are correct, outdated, incomplete, or ambiguous;
+- which explanations must be added as supplementary material;
+- which code actually demonstrates the topic;
+- which sensitive values require replacement;
+- which claims need official verification.
+
+Do not treat transcript claims as verified facts automatically.
+
+## 3. Depth requirements
+
+Follow the complete depth contract.
+
+In particular:
+
+- explain every primary concept with definition, purpose, internal mechanics,
+  lifecycle, example, limitations, alternatives, failure modes, testing, and
+  observability implications;
+- do not use a one-row table as the complete explanation of a primary concept;
+- trace the important execution flow with concrete input and output types;
+- explain important framework behavior instead of saying the framework handles
+  it automatically;
+- clearly identify concepts deferred to later lectures;
+- make the lecture self-contained for its declared scope.
+
+Target 3,000–7,000 words for most focused or code-heavy lectures. A lecture
+below 2,500 words requires a specific completeness justification in
+`generation-report.md`. Do not add filler; narrow or split the scope when needed.
+
+## 4. Code requirements
+
+For assigned or supplementary code:
+
+- preserve the source technology as primary;
+- explain responsibility, inputs, outputs, order of calls, framework behavior,
+  error paths, sync or async implications, and production limitations;
+- provide a line-group walkthrough for the central example;
+- show a testing approach;
+- distinguish original, corrected, and supplementary code;
+- never claim successful execution without running the command.
+
+When no lecturer code is assigned, create and label a coherent supplementary
+example large enough to demonstrate the central topic.
+
+## 5. External verification
+
+For version-sensitive claims:
+
+- use official documentation, specifications, official repositories, or release
+  notes when access is available;
 - do not fabricate citations;
-- mark claims as unverified when verification is unavailable;
-- explicitly describe outdated or incorrect lecturer statements.
+- mark unverified claims explicitly;
+- record consulted sources in the generation report.
 
-## Code handling
+## 6. Draft output
 
-For every relevant code example:
-
-- explain responsibility and execution flow;
-- identify framework behavior and hidden lifecycle behavior;
-- identify production limitations;
-- preserve the original implementation language;
-- do not silently modify lecturer-provided code;
-- separate original code, corrected code, and additional examples;
-- run safe local validation when the project provides an executable build;
-- never claim code was tested when it was not executed.
-
-## Lecture generation
-
-Follow all requirements from:
-
-`prompts/master-learning-prompt.md`
-
-Generate a complete Ukrainian-language lecture focused on the central topic
-defined in the manifest.
-
-Before writing files, set the lecture workflow status to:
-
-```yaml
-status: GENERATION_IN_PROGRESS
-```
-
-## Output location
-
-Write the draft under:
-
-`_artifacts/drafts/<lecture-id>/`
-
-Create:
+Set lecture status to `GENERATION_IN_PROGRESS` and write:
 
 ```text
 _artifacts/drafts/<lecture-id>/
@@ -123,58 +133,42 @@ _artifacts/drafts/<lecture-id>/
 
 `generation-report.md` must include:
 
-- lecture ID;
-- source files and exact ranges used;
-- code, test, and configuration files used;
+- lecture ID and generation mode;
+- source ranges and files used;
+- concept coverage matrix;
+- primary, secondary, and deferred concepts;
 - official sources consulted;
-- assumptions;
-- corrections;
+- assumptions and corrections;
+- supplementary material added;
 - unverified claims;
 - code execution status;
-- omitted material;
-- known limitations;
-- validation result.
+- omitted material and rationale;
+- approximate word count;
+- depth-contract self-check;
+- repair findings addressed, when applicable;
+- known limitations.
 
-## Validation
+## 7. Generator self-check
 
 Before returning:
 
-1. Verify the lecture follows the master-prompt structure.
-2. Confirm only the requested lecture was generated.
-3. Check that sensitive data was not copied.
-4. Check relative links and referenced source paths.
-5. Check Markdown code fences.
-6. Check Mermaid blocks for obvious syntax errors.
-7. Check that code execution status is accurate.
-8. Check that corrections and assumptions are explicit.
-9. Confirm all four required draft files exist and are non-empty.
-10. Inspect the Git diff.
+1. Confirm all primary concepts satisfy their coverage contract.
+2. Confirm the end-to-end flow contains concrete data transformations.
+3. Confirm the central code example has a walkthrough.
+4. Confirm security, observability, testing, and failure sections explain
+   mechanisms rather than only naming terms.
+5. Confirm every assigned source range is covered or explicitly omitted.
+6. Confirm the lecture is not an outline or recall sheet disguised as a lecture.
+7. Confirm links, Markdown, code fences, and Mermaid blocks are valid.
+8. Confirm all four required files exist and are non-empty.
+9. Inspect the Git diff.
 
-If validation succeeds, set:
+If draft creation succeeds, set:
 
 ```yaml
 status: DRAFT_GENERATED
 ```
 
-If validation fails, set:
+Do not set `QUALITY_PASSED`. Return the draft to the independent reviewer.
 
-```yaml
-status: GENERATION_FAILED
-```
-
-Record the reason in `generation-report.md` and return a blocking result to the
-caller.
-
-## Completion behavior
-
-After processing the requested lecture:
-
-- summarize files created or reused;
-- report assumptions and corrections;
-- report failed or skipped checks;
-- return the lecture ID, status, and output path to the caller;
-- do not publish the lecture.
-
-When invoked directly, stop after this one lecture.
-When invoked by `start-learning-section`, allow the caller to continue only when
-the lecture status is `DRAFT_GENERATED`.
+If generation fails, set `GENERATION_FAILED`, record the exact reason, and stop.
